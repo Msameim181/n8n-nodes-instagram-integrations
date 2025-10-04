@@ -12,6 +12,39 @@ import { NodeApiError } from 'n8n-workflow';
 import * as crypto from 'crypto';
 
 /**
+ * Get Instagram Business Account ID from the authenticated user
+ */
+export async function getInstagramBusinessAccountId(
+	this: IExecuteFunctions | IWebhookFunctions | IHookFunctions | ILoadOptionsFunctions,
+): Promise<string> {
+	try {
+		const options: IRequestOptions = {
+			method: 'GET',
+			url: 'https://graph.facebook.com/v23.0/me/accounts',
+			qs: {
+				fields: 'instagram_business_account',
+			},
+			json: true,
+		};
+
+		const response = await this.helpers.requestOAuth2.call(this, 'instagramOAuth2Api', options);
+		
+		if (response.data && response.data.length > 0) {
+			const igAccount = response.data[0].instagram_business_account;
+			if (igAccount && igAccount.id) {
+				return igAccount.id;
+			}
+		}
+		
+		throw new Error('No Instagram Business Account found. Make sure your Facebook Page is connected to an Instagram Business Account.');
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error as JsonObject, {
+			message: 'Failed to fetch Instagram Business Account ID',
+		});
+	}
+}
+
+/**
  * Make an authenticated API request to Instagram Graph API
  */
 export async function instagramApiRequest(
@@ -21,15 +54,10 @@ export async function instagramApiRequest(
 	body: IDataObject = {},
 	qs: IDataObject = {},
 ): Promise<any> {
-	const credentials = await this.getCredentials('instagramApi');
-
 	const options: IRequestOptions = {
 		method,
 		body,
-		qs: {
-			access_token: credentials.accessToken,
-			...qs,
-		},
+		qs,
 		url: `https://graph.instagram.com/v23.0${endpoint}`,
 		json: true,
 	};
@@ -39,7 +67,7 @@ export async function instagramApiRequest(
 	}
 
 	try {
-		return await this.helpers.request(options);
+		return await this.helpers.requestOAuth2.call(this, 'instagramOAuth2Api', options);
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error as JsonObject);
 	}

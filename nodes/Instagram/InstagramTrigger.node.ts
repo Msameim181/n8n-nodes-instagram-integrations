@@ -27,7 +27,7 @@ export class InstagramTrigger implements INodeType {
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'instagramApi',
+				name: 'instagramOAuth2Api',
 				required: true,
 			},
 		],
@@ -93,7 +93,7 @@ export class InstagramTrigger implements INodeType {
 		const query = this.getQueryData() as IDataObject;
 		const headerData = this.getHeaderData() as IDataObject;
 		const bodyData = this.getBodyData() as IDataObject;
-		const credentials = await this.getCredentials('instagramApi');
+		const credentials = await this.getCredentials('instagramOAuth2Api');
 
 		// ==================== Handle GET Request (Webhook Verification) ====================
 		if (req.method === 'GET') {
@@ -116,7 +116,7 @@ export class InstagramTrigger implements INodeType {
 		if (req.method === 'POST') {
 			// Validate signature
 			const signature = headerData['x-hub-signature-256'] as string;
-			const appSecret = credentials.appSecret as string;
+			const appSecret = credentials.clientSecret as string;
 
 			if (!signature) {
 				throw new NodeOperationError(this.getNode(), 'Webhook authentication failed: No signature provided');

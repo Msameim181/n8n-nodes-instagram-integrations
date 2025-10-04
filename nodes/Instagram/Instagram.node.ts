@@ -5,7 +5,7 @@ import type {
 	INodeTypeDescription,
 } from 'n8n-workflow';
 
-import { instagramApiRequest } from './GenericFunctions';
+import { instagramApiRequest, getInstagramBusinessAccountId } from './GenericFunctions';
 import type { IButton, IGenericElement, IQuickReply } from './types';
 
 export class Instagram implements INodeType {
@@ -24,7 +24,7 @@ export class Instagram implements INodeType {
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'instagramApi',
+				name: 'instagramOAuth2Api',
 				required: true,
 			},
 		],
@@ -969,13 +969,12 @@ export class Instagram implements INodeType {
 					}
 
 					// ==================== Upload Media ====================
-					else if (operation === 'uploadMedia') {
-						const credentials = await this.getCredentials('instagramApi');
-						const mediaType = this.getNodeParameter('mediaType', i) as string;
-						const mediaUrl = this.getNodeParameter('mediaUrl', i) as string;
-						const caption = this.getNodeParameter('caption', i, '') as string;
-
-						const body: any = {
+				else if (operation === 'uploadMedia') {
+					// Get Instagram Business Account ID
+					const igUserId = await getInstagramBusinessAccountId.call(this);
+					const mediaType = this.getNodeParameter('mediaType', i) as string;
+					const mediaUrl = this.getNodeParameter('mediaUrl', i) as string;
+					const caption = this.getNodeParameter('caption', i, '') as string;						const body: any = {
 							image_url: mediaUrl,
 							caption,
 						};
@@ -989,7 +988,7 @@ export class Instagram implements INodeType {
 						const responseData = await instagramApiRequest.call(
 							this,
 							'POST',
-							`/${credentials.igUserId}/media`,
+							`/${igUserId}/media`,
 							body,
 						);
 						returnData.push({ json: responseData, pairedItem: { item: i } });
