@@ -123,13 +123,19 @@ export class Instagram implements INodeType {
 				},
 				options: [
 					{
+						name: 'Get My Profile',
+						value: 'getMyProfile',
+						description: 'Get authenticated account profile information',
+						action: 'Get my profile',
+					},
+					{
 						name: 'Get Profile',
 						value: 'getProfile',
-						description: 'Get user profile information',
+						description: 'Get user profile information by ID',
 						action: 'Get user profile',
 					},
 				],
-				default: 'getProfile',
+				default: 'getMyProfile',
 			},
 
 			// ==================== Send Text Message ====================
@@ -741,6 +747,59 @@ export class Instagram implements INodeType {
 				default: ['id', 'name', 'username', 'profile_pic'],
 				description: 'Fields to retrieve from user profile',
 			},
+
+			// ==================== Get My Profile Fields ====================
+			{
+				displayName: 'Fields',
+				name: 'myProfileFields',
+				type: 'multiOptions',
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['getMyProfile'],
+					},
+				},
+				options: [
+					{
+						name: 'Account Type',
+						value: 'account_type',
+					},
+					{
+						name: 'Followers Count',
+						value: 'followers_count',
+					},
+					{
+						name: 'Follows Count',
+						value: 'follows_count',
+					},
+					{
+						name: 'ID',
+						value: 'id',
+					},
+					{
+						name: 'Media Count',
+						value: 'media_count',
+					},
+					{
+						name: 'Name',
+						value: 'name',
+					},
+					{
+						name: 'Profile Picture URL',
+						value: 'profile_picture_url',
+					},
+					{
+						name: 'User ID',
+						value: 'user_id',
+					},
+					{
+						name: 'Username',
+						value: 'username',
+					},
+				],
+				default: ['id', 'username', 'name', 'account_type'],
+				description: 'Fields to retrieve from authenticated user profile',
+			},
 		],
 	};
 
@@ -997,7 +1056,18 @@ export class Instagram implements INodeType {
 
 				// ==================== User Operations ====================
 				else if (resource === 'user') {
-					if (operation === 'getProfile') {
+					// ==================== Get My Profile ====================
+					if (operation === 'getMyProfile') {
+						const fields = this.getNodeParameter('myProfileFields', i) as string[];
+
+						const responseData = await instagramApiRequest.call(this, 'GET', '/me', {}, {
+							fields: fields.join(','),
+						});
+						returnData.push({ json: responseData, pairedItem: { item: i } });
+					}
+
+					// ==================== Get User Profile ====================
+					else if (operation === 'getProfile') {
 						const userId = this.getNodeParameter('userId', i) as string;
 						const fields = this.getNodeParameter('fields', i) as string[];
 

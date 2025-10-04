@@ -46,6 +46,13 @@ export class InstagramOAuth2Api implements ICredentialType {
 			default: 'body',
 		},
 		{
+			displayName: 'Account Information',
+			name: 'accountInfoNotice',
+			type: 'notice',
+			default: '',
+			description: 'After connecting your account, your Instagram Business Account details (username, ID, profile) will be automatically available. You can access this information in your workflow nodes.',
+		},
+		{
 			displayName: 'Client ID',
 			name: 'clientId',
 			type: 'string',
