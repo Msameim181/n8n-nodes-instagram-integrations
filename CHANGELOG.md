@@ -1,9 +1,37 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to n8n-nodes-instagram-integrations will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [Unreleased]
+
+### Planned Features
+- Story mentions and replies support
+- Instagram comments automation
+- Media insights and analytics
+- Batch message sending operations
+- Enhanced error reporting with retry logic
+
+---
+
+## [1.2.11] - 2025-10-04
+
+### Changed
+- Updated documentation to professional standards
+- Enhanced README with comprehensive feature descriptions
+- Added CONTRIBUTING.md for community guidelines
+- Added AUTHENTICATION_GUIDE.md for detailed setup instructions
+- Improved code examples and troubleshooting sections
+
+### Fixed
+- LICENSE copyright information updated
+- CODE_OF_CONDUCT contact email corrected
+
+---
 
 ## [1.0.1] - 2025-10-04
 
@@ -105,10 +133,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-**Legend:**
-- `Added` for new features
-- `Changed` for changes in existing functionality
-- `Deprecated` for soon-to-be removed features
-- `Removed` for now removed features
-- `Fixed` for any bug fixes
-- `Security` in case of vulnerabilities
+## Links
+
+- [npm Package](https://www.npmjs.com/package/n8n-nodes-instagram-integrations)
+- [GitHub Repository](https://github.com/Msameim181/n8n-instagram)
+- [Issue Tracker](https://github.com/Msameim181/n8n-instagram/issues)
+
+---
+
+## Changelog Legend
+
+- **Added** - New features
+- **Changed** - Changes in existing functionality
+- **Deprecated** - Soon-to-be removed features
+- **Removed** - Removed features
+- **Fixed** - Bug fixes
+- **Security** - Security improvements or vulnerability fixes
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.

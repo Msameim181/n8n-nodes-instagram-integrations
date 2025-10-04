@@ -33,7 +33,9 @@
   "files": [
     "dist",
     "CHANGELOG.md",
-    "AUTHENTICATION_GUIDE.md"
+    "AUTHENTICATION_GUIDE.md",
+    "API_REFERENCE.md",
+    "CONTRIBUTING.md"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
