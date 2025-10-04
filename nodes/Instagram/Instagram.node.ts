@@ -728,23 +728,39 @@ export class Instagram implements INodeType {
 				},
 				options: [
 					{
+						name: 'Follower Count',
+						value: 'follower_count',
+					},
+					{
 						name: 'ID',
 						value: 'id',
+					},
+					{
+						name: 'Is Business Follow User',
+						value: 'is_business_follow_user',
+					},
+					{
+						name: 'Is User Follow Business',
+						value: 'is_user_follow_business',
+					},
+					{
+						name: 'Is Verified User',
+						value: 'is_verified_user',
 					},
 					{
 						name: 'Name',
 						value: 'name',
 					},
 					{
-						name: 'Username',
-						value: 'username',
-					},
-					{
 						name: 'Profile Picture',
 						value: 'profile_pic',
 					},
+					{
+						name: 'Username',
+						value: 'username',
+					},
 				],
-				default: ['id', 'name', 'username', 'profile_pic'],
+				default: ['id', 'name', 'username','follower_count'],
 				description: 'Fields to retrieve from user profile',
 			},
 
