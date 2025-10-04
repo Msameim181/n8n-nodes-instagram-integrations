@@ -163,7 +163,6 @@ export class InstagramTrigger implements INodeType {
 						};
 
 						let shouldInclude = false;
-
 						// Handle message events
 						if (messagingEvent.message && events.includes('messages')) {
 							data.eventType = 'message';

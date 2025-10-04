@@ -55,7 +55,6 @@ export interface IQuickReply {
 	content_type: 'text';
 	title: string;
 	payload: string;
-	image_url?: string;
 }
 
 export interface IInstagramWebhook {

@@ -454,6 +454,10 @@ export class Instagram implements INodeType {
 						displayName: 'Buttons',
 						name: 'buttons',
 						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+							maxValues: 3,
+						},
 						default: {},
 						placeholder: 'Add Button',
 						options: [
@@ -624,14 +628,6 @@ export class Instagram implements INodeType {
 								default: '',
 								placeholder: 'OPTION_1',
 								description: 'Payload sent back when clicked (max 1000 characters)',
-							},
-							{
-								displayName: 'Image URL',
-								name: 'image_url',
-								type: 'string',
-								default: '',
-								placeholder: 'https://example.com/icon.png',
-								description: 'Optional icon image URL',
 							},
 						],
 					},
@@ -956,43 +952,41 @@ export class Instagram implements INodeType {
 						const recipientId = this.getNodeParameter('recipientId', i) as string;
 						const elementsData = this.getNodeParameter('elements', i) as any;
 
-						const elements: IGenericElement[] = [];
-						if (elementsData.element) {
-							for (const elem of elementsData.element) {
-								const element: IGenericElement = {
-									title: elem.title,
-								};
-
-								if (elem.subtitle) element.subtitle = elem.subtitle;
+					const elements: IGenericElement[] = [];
+					if (elementsData.element && Array.isArray(elementsData.element)) {
+						for (const elem of elementsData.element) {
+							const element: IGenericElement = {
+								title: elem.title,
+							};								if (elem.subtitle) element.subtitle = elem.subtitle;
 								if (elem.image_url) element.image_url = elem.image_url;
 
-								if (elem.default_action?.action?.url) {
-									element.default_action = {
-										type: 'web_url',
-										url: elem.default_action.action.url,
-									};
-								}
 
-								if (elem.buttons?.button) {
-									element.buttons = [];
-									for (const button of elem.buttons.button) {
-										const buttonObj: IButton = {
-											type: button.type,
-											title: button.title,
-										};
-										if (button.type === 'web_url') {
-											buttonObj.url = button.url;
-										} else {
-											buttonObj.payload = button.payload;
-										}
-										element.buttons.push(buttonObj);
-									}
-								}
-
-								elements.push(element);
+							if (elem.default_action?.action?.url) {
+								element.default_action = {
+									type: 'web_url',
+									url: elem.default_action.action.url,
+								};
 							}
-						}
 
+							if (elem.buttons?.button && Array.isArray(elem.buttons.button)) {
+								element.buttons = [];
+								for (const button of elem.buttons.button) {
+									const buttonObj: IButton = {
+										type: button.type,
+										title: button.title,
+									};
+									if (button.type === 'web_url') {
+										buttonObj.url = button.url;
+									} else {
+										buttonObj.payload = button.payload;
+									}
+									element.buttons.push(buttonObj);
+								}
+							}
+
+							elements.push(element);
+						}
+					}
 						const body = {
 							recipient: { id: recipientId },
 							message: {
@@ -1014,24 +1008,21 @@ export class Instagram implements INodeType {
 					else if (operation === 'sendQuickReplies') {
 						const recipientId = this.getNodeParameter('recipientId', i) as string;
 						const messageText = this.getNodeParameter('messageText', i) as string;
-						const quickRepliesData = this.getNodeParameter('quickReplies', i) as any;
+					const quickRepliesData = this.getNodeParameter('quickReplies', i) as any;
 
-						const quickReplies: IQuickReply[] = [];
-						if (quickRepliesData.quickReply) {
-							for (const qr of quickRepliesData.quickReply) {
-								const quickReply: IQuickReply = {
-									content_type: 'text',
-									title: qr.title,
-									payload: qr.payload,
-								};
-								if (qr.image_url) {
-									quickReply.image_url = qr.image_url;
-								}
-								quickReplies.push(quickReply);
-							}
+					const quickReplies: IQuickReply[] = [];
+					if (quickRepliesData.quickReply && Array.isArray(quickRepliesData.quickReply)) {
+						for (const qr of quickRepliesData.quickReply) {
+							const quickReply: IQuickReply = {
+								content_type: 'text',
+								title: qr.title,
+								payload: qr.payload,
+							};
+							quickReplies.push(quickReply);
 						}
+					}
 
-						const body = {
+					const body = {
 							recipient: { id: recipientId },
 							message: {
 								text: messageText,
