@@ -33,8 +33,14 @@ export class InstagramTrigger implements INodeType {
 		],
 		webhooks: [
 			{
+				name: 'setup',
+				httpMethod: 'GET',
+				responseMode: 'onReceived',
+				path: 'webhook',
+			},
+			{
 				name: 'default',
-				httpMethod: '={{$parameter["httpMethod"] || "POST"}}',
+				httpMethod: 'POST',
 				responseMode: 'onReceived',
 				path: 'webhook',
 			},
@@ -76,6 +82,17 @@ export class InstagramTrigger implements INodeType {
 
 	webhookMethods = {
 		default: {
+			async checkExists(this: IHookFunctions): Promise<boolean> {
+				return true;
+			},
+			async create(this: IHookFunctions): Promise<boolean> {
+				return true;
+			},
+			async delete(this: IHookFunctions): Promise<boolean> {
+				return true;
+			},
+		},
+		setup: {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
 				return true;
 			},
