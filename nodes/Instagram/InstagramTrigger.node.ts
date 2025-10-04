@@ -174,6 +174,7 @@ export class InstagramTrigger implements INodeType {
 								data.quickReplyPayload = messagingEvent.message.quick_reply.payload;
 							}
 							shouldInclude = true;
+							data.isEcho = messagingEvent.message.is_echo || false;
 						}
 
 						// Handle postback events

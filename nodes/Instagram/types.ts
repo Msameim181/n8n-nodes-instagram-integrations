@@ -78,6 +78,7 @@ export interface IMessagingEvent {
 		text?: string;
 		attachments?: any[];
 		quick_reply?: { payload: string };
+		is_echo?: boolean;
 	};
 	postback?: {
 		title: string;
