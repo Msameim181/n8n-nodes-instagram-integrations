@@ -136,8 +136,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Links
 
 - [npm Package](https://www.npmjs.com/package/n8n-nodes-instagram-integrations)
-- [GitHub Repository](https://github.com/Msameim181/n8n-instagram)
-- [Issue Tracker](https://github.com/Msameim181/n8n-instagram/issues)
+- [GitHub Repository](https://github.com/Msameim181/n8n-nodes-instagram-integrations)
+- [Issue Tracker](https://github.com/Msameim181/n8n-nodes-instagram-integrations/issues)
 
 ---
 

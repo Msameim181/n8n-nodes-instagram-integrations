@@ -93,7 +93,7 @@ Successfully developed a **complete N8N community node package** for Instagram M
 ## 🏗️ Project Structure
 
 ```
-n8n-instagram/
+n8n-nodes-instagram-integrations/
 ├── 📁 .github/
 │   └── 📁 instructions/
 │       ├── 📄 instagram-nodes.instructions.md      (Tech Spec)

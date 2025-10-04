@@ -27,7 +27,7 @@ A detailed specification defining:
 ## 🏗️ Architecture
 
 ```
-n8n-instagram/
+n8n-nodes-instagram-integrations/
 ├── credentials/
 │   └── InstagramApi.credentials.ts       # OAuth2 + manual credentials
 ├── nodes/

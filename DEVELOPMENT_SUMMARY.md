@@ -47,7 +47,7 @@
 ## 📦 Project Structure
 
 ```
-n8n-instagram/
+n8n-nodes-instagram-integrations/
 ├── credentials/
 │   └── InstagramApi.credentials.ts          ✅ OAuth2 credentials
 ├── nodes/
@@ -128,7 +128,7 @@ n8n-instagram/
 ### 1. Local Testing
 ```bash
 # Link package locally
-cd /Users/mahdi/Documents/Projects/Personal-Projects/N8N/n8n-instagram
+cd /Users/mahdi/Documents/Projects/Personal-Projects/N8N/n8n-nodes-instagram-integrations
 npm link
 
 # In N8N installation directory

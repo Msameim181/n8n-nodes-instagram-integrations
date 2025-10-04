@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-instagram-integrations",
-  "version": "1.2.11",
+  "version": "1.2.12",
   "description": "N8N nodes for Instagram API integration with OAuth2 authentication",
   "keywords": [
     "n8n-community-node-package",
@@ -9,14 +9,14 @@
     "instagram-api"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/Msameim181/n8n-instagram#readme",
+  "homepage": "https://github.com/Msameim181/n8n-nodes-instagram-integrations#readme",
   "author": {
     "name": "Mohammad Mahdi Samei",
     "email": "9259samei@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Msameim181/n8n-instagram.git"
+    "url": "https://github.com/Msameim181/n8n-nodes-instagram-integrations.git"
   },
   "engines": {
     "node": ">=20.15"

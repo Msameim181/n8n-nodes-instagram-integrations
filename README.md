@@ -273,7 +273,7 @@ n8n start
 ### Resources
 - 📖 [Instagram Graph API Documentation](https://developers.facebook.com/docs/instagram-api)
 - 💬 [n8n Community Forum](https://community.n8n.io)
-- 🐛 [Issue Tracker](https://github.com/Msameim181/n8n-instagram/issues)
+- 🐛 [Issue Tracker](https://github.com/Msameim181/n8n-nodes-instagram-integrations/issues)
 - 📧 Email: 9259samei@gmail.com
 
 ### Contributing
@@ -314,4 +314,4 @@ Copyright © 2025 Mohammad Mahdi Samei
 
 ---
 
-**Made with ❤️ for the n8n community** | [GitHub](https://github.com/Msameim181/n8n-instagram) | [npm](https://www.npmjs.com/package/n8n-nodes-instagram-integrations)
+**Made with ❤️ for the n8n community** | [GitHub](https://github.com/Msameim181/n8n-nodes-instagram-integrations) | [npm](https://www.npmjs.com/package/n8n-nodes-instagram-integrations)

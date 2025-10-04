@@ -638,7 +638,7 @@ X-App-Usage: {"call_count":15,"total_cputime":25,"total_time":25}
 
 ### Support
 - 📧 Email: 9259samei@gmail.com
-- 🐛 [Issue Tracker](https://github.com/Msameim181/n8n-instagram/issues)
+- 🐛 [Issue Tracker](https://github.com/Msameim181/n8n-nodes-instagram-integrations/issues)
 - 💬 [n8n Community](https://community.n8n.io)
 
 ---
