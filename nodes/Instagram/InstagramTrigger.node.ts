@@ -16,7 +16,7 @@ export class InstagramTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Instagram Trigger',
 		name: 'instagramTrigger',
-		icon: 'file:instagram.svg',
+		icon: 'file:instagram-large.svg',
 		group: ['trigger'],
 		version: 1,
 		description: 'Triggers workflow on Instagram webhook events (messages, postbacks, etc.)',

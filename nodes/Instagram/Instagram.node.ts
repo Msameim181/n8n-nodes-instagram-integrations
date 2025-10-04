@@ -12,7 +12,7 @@ export class Instagram implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Instagram',
 		name: 'instagram',
-		icon: 'file:instagram.svg',
+		icon: 'file:instagram-large.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
