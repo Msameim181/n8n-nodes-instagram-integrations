@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-instagram-integrations",
-  "version": "1.0.0",
-  "description": "N8N nodes for Instagram Messaging API integration",
+  "version": "1.1.0",
+  "description": "N8N nodes for Instagram API integration with OAuth2 authentication",
   "keywords": [
     "n8n-community-node-package",
     "instagram",
@@ -11,8 +11,8 @@
   "license": "MIT",
   "homepage": "https://github.com/Msameim181/n8n-instagram#readme",
   "author": {
-    "name": "Yugen Solutions",
-    "email": "info@yugen-solutions.com"
+    "name": "Mohammad Mahdi Samei",
+    "email": "9259samei@gmail.com"
   },
   "repository": {
     "type": "git",
@@ -31,12 +31,14 @@
     "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md",
+    "AUTHENTICATION_GUIDE.md"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/InstagramApi.credentials.js"
+      "dist/credentials/InstagramOAuth2Api.credentials.js"
     ],
     "nodes": [
       "dist/nodes/Instagram/Instagram.node.js",

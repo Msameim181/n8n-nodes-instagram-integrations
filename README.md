@@ -1,52 +1,57 @@
-# n8n-nodes-instagram
+# n8n-nodes-instagram-integrations
 
 ![Instagram Banner](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)
-[![npm version](https://img.shields.io/npm/v/n8n-nodes-instagram.svg)](https://www.npmjs.com/package/n8n-nodes-instagram)
+[![npm version](https://img.shields.io/npm/v/n8n-nodes-instagram-integrations.svg)](https://www.npmjs.com/package/n8n-nodes-instagram-integrations)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This is an n8n community node package for Instagram Messaging API integration. It provides comprehensive support for sending messages, managing media, and handling webhooks through the Instagram Graph API.
+N8N community nodes for Instagram API integration with **OAuth2 authentication** - just like Google Drive!
 
-## 📦 Installation
+## ✨ Features
 
-### Community Nodes (Recommended)
+### 🔐 Simple OAuth2 Authentication
+- **One-click login** - Authenticate through Instagram popup
+- **Automatic token management** - N8N handles token refresh
+- **Secure** - Uses official OAuth2 flow
+- Works exactly like Google Drive authentication in N8N
 
-1. In n8n, go to **Settings > Community Nodes**
-2. Select **Install**
-3. Enter `n8n-nodes-instagram` in the **Enter npm package name** field
-4. Click **Install**
+### 📬 Instagram Node
+Send messages and interact with Instagram users:
+- ✉️ Send Text, Image, Audio, Video Messages
+- �� Send Button & Generic Templates  
+- ⚡ Send Quick Replies
+- 📤 Upload Media
+- 👤 Get User Profile
 
-### Manual Installation
+### 🔔 Instagram Trigger Node  
+Listen for Instagram events:
+- 💬 New Messages
+- 🔘 Button Postbacks
+- ✅ User Opt-ins
+
+## 🚀 Quick Start
+
+### 1. Install
 
 ```bash
-npm install n8n-nodes-instagram
+npm install n8n-nodes-instagram-integrations
 ```
 
-## 🔑 Prerequisites
+### 2. Get Instagram Credentials
 
-Before using this integration, you need:
+1. Go to [Meta Developer Console](https://developers.facebook.com/apps/)
+2. Create app → Add Instagram product
+3. Note **App ID** and **App Secret**
 
-1. **Facebook Page** - A Facebook Page linked to your Instagram Business Account
-2. **Instagram Business Account** - Convert your Instagram account to a Business account
-3. **Meta Developer App** - Create an app in the [Meta Developer Console](https://developers.facebook.com/)
-4. **Required Permissions**: `instagram_basic`, `instagram_manage_messages`, `pages_manage_metadata`, `pages_read_engagement`
-5. **Page Access Token** - Generate a token with the required permissions
+### 3. Authenticate (Just Like Google Drive!)
 
-## 🚀 Features
-
-### Main Node: Instagram
-- Send Text, Image, Audio, Video Messages
-- Send Button & Generic Templates
-- Send Quick Replies
-- Upload Media
-- Get User Profile
-
-### Trigger Node: Instagram Trigger
-- Listen for Messages, Postbacks, Opt-ins
-
-## 📚 Documentation
-
-See [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) for complete documentation and examples.
+1. In N8N: **Credentials > New > Instagram OAuth2 API**
+2. Enter **Client ID** (App ID) and **Client Secret**
+3. Click **Connect my account**
+4. Instagram popup → Login → Authorize
+5. ✅ Done!
 
 ## 📄 License
 
-[MIT](LICENSE.md)
+MIT License
+
+**Made with ❤️ for the N8N community**
