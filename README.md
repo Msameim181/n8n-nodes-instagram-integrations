@@ -1,48 +1,52 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n-nodes-instagram
 
-# n8n-nodes-starter
+![Instagram Banner](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)
+[![npm version](https://img.shields.io/npm/v/n8n-nodes-instagram.svg)](https://www.npmjs.com/package/n8n-nodes-instagram)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](https://n8n.io). It includes the node linter and other dependencies.
+This is an n8n community node package for Instagram Messaging API integration. It provides comprehensive support for sending messages, managing media, and handling webhooks through the Instagram Graph API.
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+## 📦 Installation
 
-If you would like your node to be available on n8n cloud you can also [submit your node for verification](https://docs.n8n.io/integrations/creating-nodes/deploy/submit-community-nodes/).
+### Community Nodes (Recommended)
 
-## Prerequisites
+1. In n8n, go to **Settings > Community Nodes**
+2. Select **Install**
+3. Enter `n8n-nodes-instagram` in the **Enter npm package name** field
+4. Click **Install**
 
-You need the following installed on your development machine:
+### Manual Installation
 
-* [git](https://git-scm.com/downloads)
-* Node.js and npm. Minimum version Node 20. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  npm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+```bash
+npm install n8n-nodes-instagram
+```
 
-## Using this starter
+## 🔑 Prerequisites
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+Before using this integration, you need:
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `npm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `npm run lint` to check for errors or `npm run lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+1. **Facebook Page** - A Facebook Page linked to your Instagram Business Account
+2. **Instagram Business Account** - Convert your Instagram account to a Business account
+3. **Meta Developer App** - Create an app in the [Meta Developer Console](https://developers.facebook.com/)
+4. **Required Permissions**: `instagram_basic`, `instagram_manage_messages`, `pages_manage_metadata`, `pages_read_engagement`
+5. **Page Access Token** - Generate a token with the required permissions
 
-## More information
+## 🚀 Features
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+### Main Node: Instagram
+- Send Text, Image, Audio, Video Messages
+- Send Button & Generic Templates
+- Send Quick Replies
+- Upload Media
+- Get User Profile
 
-## License
+### Trigger Node: Instagram Trigger
+- Listen for Messages, Postbacks, Opt-ins
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+## 📚 Documentation
+
+See [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) for complete documentation and examples.
+
+## 📄 License
+
+[MIT](LICENSE.md)
