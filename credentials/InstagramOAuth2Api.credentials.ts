@@ -142,7 +142,18 @@ export class InstagramOAuth2Api implements ICredentialType {
 		const longLivedToken = credentials.longLivedToken as string;
 		const oauthTokenData = credentials.oauthTokenData as any;
 		
-		let accessToken = oauthTokenData?.access_token || credentials.accessToken as string;
+		let accessToken = '';
+		
+		// First check if we have the OAuth token data
+		if (oauthTokenData?.access_token) {
+			accessToken = oauthTokenData.access_token;
+		} else if (credentials.accessToken) {
+			accessToken = credentials.accessToken as string;
+		}
+		
+		if (!accessToken) {
+			throw new Error('No access token found. Please reconnect your Instagram account.');
+		}
 
 		// Check if we need to get a long-lived token for the first time
 		if (!longLivedToken && accessToken) {
