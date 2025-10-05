@@ -377,7 +377,7 @@ n8n auto-refreshes token
 Short-lived tokens (1 hour) can be exchanged for long-lived tokens (60 days):
 
 ```bash
-curl -X GET "https://graph.facebook.com/v23.0/oauth/access_token" \
+curl -X GET "https://graph.instagram.com/v23.0/oauth/access_token" \
   -d "grant_type=fb_exchange_token" \
   -d "client_id=YOUR_APP_ID" \
   -d "client_secret=YOUR_APP_SECRET" \
@@ -398,7 +398,7 @@ Response:
 Refresh long-lived tokens before expiry:
 
 ```bash
-curl -X GET "https://graph.facebook.com/v23.0/oauth/access_token" \
+curl -X GET "https://graph.instagram.com/v23.0/oauth/access_token" \
   -d "grant_type=fb_exchange_token" \
   -d "client_id=YOUR_APP_ID" \
   -d "client_secret=YOUR_APP_SECRET" \

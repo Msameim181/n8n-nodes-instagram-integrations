@@ -48,7 +48,7 @@ This document defines the complete architecture for N8N Instagram integration no
 - Type: OAuth2 (recommended) or Manual Token
 - Grant Type: Authorization Code
 - Authorization URL: `https://www.facebook.com/v23.0/dialog/oauth`
-- Token URL: `https://graph.facebook.com/v23.0/oauth/access_token`
+- Token URL: `https://graph.instagram.com/v23.0/oauth/access_token`
 - Scope: `instagram_basic,instagram_manage_messages,pages_manage_metadata,pages_read_engagement`
 
 **Test Connection**: Verify by calling `GET /{ig-user-id}?fields=id,username`
