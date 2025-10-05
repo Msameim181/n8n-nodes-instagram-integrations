@@ -20,7 +20,7 @@ export async function getInstagramBusinessAccountId(
 	try {
 		const options: IRequestOptions = {
 			method: 'GET',
-			url: 'https://graph.facebook.com/v23.0/me',
+			url: 'https://graph.instagram.com/v23.0/me',
 			qs: {
 				fields: 'id,name,account_type,media_count,user_id,username',
 			},
@@ -39,7 +39,7 @@ export async function getInstagramBusinessAccountId(
 		throw new Error('No Instagram Business Account found. Make sure your Facebook Page is connected to an Instagram Business Account.');
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error as JsonObject, {
-			message: 'Failed to fetch Instagram Business Account ID',
+			message: 'Failed to fetch Instagram Business Account ID, Error: ' + (error as Error).message,
 		});
 	}
 }
