@@ -29,11 +29,8 @@ export async function getInstagramBusinessAccountId(
 
 		const response = await this.helpers.requestOAuth2.call(this, 'instagramOAuth2Api', options);
 		
-		if (response.data && response.data.length > 0) {
-			const igAccount = response.data[0];
-			if (igAccount && igAccount.id) {
-				return igAccount.id;
-			}
+		if (response && response.id) {
+			return response.id;
 		}
 		
 		throw new Error('No Instagram Business Account found. Make sure your Facebook Page is connected to an Instagram Business Account.');
