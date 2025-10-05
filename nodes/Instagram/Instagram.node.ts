@@ -28,7 +28,7 @@ export class Instagram implements INodeType {
 				required: true,
 			},
 		],
-		properties: [
+			properties: [
 			// Resource selection
 			{
 				displayName: 'Resource',
@@ -37,8 +37,20 @@ export class Instagram implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
+						name: 'Media',
+						value: 'media',
+					},
+					{
 						name: 'Message',
 						value: 'message',
+					},
+					{
+						name: 'Post',
+						value: 'post',
+					},
+					{
+						name: 'Story',
+						value: 'story',
 					},
 					{
 						name: 'User',
@@ -46,9 +58,7 @@ export class Instagram implements INodeType {
 					},
 				],
 				default: 'message',
-			},
-
-			// Message Operations
+			},			// Message Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -110,7 +120,105 @@ export class Instagram implements INodeType {
 			},
 		],
 		default: 'sendText',
-	},			// User Operations
+	},
+
+			// Media Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['media'],
+					},
+				},
+				options: [
+					{
+						name: 'Get Media',
+						value: 'getMedia',
+						description: 'Get media object information',
+						action: 'Get media',
+					},
+					{
+						name: 'Get Media Children',
+						value: 'getMediaChildren',
+						description: 'Get children of a carousel album',
+						action: 'Get media children',
+					},
+					{
+						name: 'List Media',
+						value: 'listMedia',
+						description: 'Get list of media objects',
+						action: 'List media',
+					},
+				],
+				default: 'listMedia',
+			},
+
+			// Post Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+					},
+				},
+				options: [
+					{
+						name: 'Create Single Post',
+						value: 'createSinglePost',
+						description: 'Create a single image or video post',
+						action: 'Create a single post',
+					},
+					{
+						name: 'Create Carousel Post',
+						value: 'createCarouselPost',
+						description: 'Create a carousel post with multiple images/videos',
+						action: 'Create a carousel post',
+					},
+					{
+						name: 'Create Reel',
+						value: 'createReel',
+						description: 'Create a reel (short video)',
+						action: 'Create a reel',
+					},
+					{
+						name: 'Publish Post',
+						value: 'publishPost',
+						description: 'Publish a media container',
+						action: 'Publish a post',
+					},
+				],
+				default: 'createSinglePost',
+			},
+
+			// Story Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['story'],
+					},
+				},
+				options: [
+					{
+						name: 'Create Story',
+						value: 'createStory',
+						description: 'Create a story (image or video)',
+						action: 'Create a story',
+					},
+				],
+				default: 'createStory',
+			},
+
+			// User Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -696,6 +804,645 @@ export class Instagram implements INodeType {
 				description: 'Caption for the media',
 			},
 
+			// ==================== Media Operations ====================
+			// List Media
+			{
+				displayName: 'Return All',
+				name: 'returnAll',
+				type: 'boolean',
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['listMedia'],
+					},
+				},
+				default: false,
+				description: 'Whether to return all results or only up to a given limit',
+			},
+			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['listMedia'],
+						returnAll: [false],
+					},
+				},
+				typeOptions: {
+					minValue: 1,
+					maxValue: 100,
+				},
+				default: 50,
+				description: 'Max number of results to return',
+			},
+			{
+				displayName: 'Fields',
+				name: 'mediaFields',
+				type: 'multiOptions',
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['listMedia'],
+					},
+				},
+				options: [
+					{ name: 'Caption', value: 'caption' },
+					{ name: 'Comments Count', value: 'comments_count' },
+					{ name: 'ID', value: 'id' },
+					{ name: 'Is Comment Enabled', value: 'is_comment_enabled' },
+					{ name: 'Like Count', value: 'like_count' },
+					{ name: 'Media Type', value: 'media_type' },
+					{ name: 'Media URL', value: 'media_url' },
+					{ name: 'Owner', value: 'owner' },
+					{ name: 'Permalink', value: 'permalink' },
+					{ name: 'Thumbnail URL', value: 'thumbnail_url' },
+					{ name: 'Timestamp', value: 'timestamp' },
+					{ name: 'Username', value: 'username' },
+				],
+				default: ['id', 'media_type', 'media_url', 'permalink', 'timestamp'],
+				description: 'Fields to retrieve for each media item',
+			},
+
+			// Get Media
+			{
+				displayName: 'Media ID',
+				name: 'mediaId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['getMedia', 'getMediaChildren'],
+					},
+				},
+				default: '',
+				placeholder: '17895695668004550',
+				description: 'ID of the media object',
+			},
+			{
+				displayName: 'Fields',
+				name: 'mediaDetailFields',
+				type: 'multiOptions',
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['getMedia'],
+					},
+				},
+				options: [
+					{ name: 'Caption', value: 'caption' },
+					{ name: 'Children', value: 'children' },
+					{ name: 'Comments Count', value: 'comments_count' },
+					{ name: 'ID', value: 'id' },
+					{ name: 'Is Comment Enabled', value: 'is_comment_enabled' },
+					{ name: 'Like Count', value: 'like_count' },
+					{ name: 'Media Product Type', value: 'media_product_type' },
+					{ name: 'Media Type', value: 'media_type' },
+					{ name: 'Media URL', value: 'media_url' },
+					{ name: 'Owner', value: 'owner' },
+					{ name: 'Permalink', value: 'permalink' },
+					{ name: 'Shortcode', value: 'shortcode' },
+					{ name: 'Thumbnail URL', value: 'thumbnail_url' },
+					{ name: 'Timestamp', value: 'timestamp' },
+					{ name: 'Username', value: 'username' },
+				],
+				default: ['id', 'media_type', 'media_url', 'permalink', 'caption'],
+				description: 'Fields to retrieve for the media object',
+			},
+
+			// ==================== Post Operations ====================
+			// Create Single Post
+			{
+				displayName: 'Media Type',
+				name: 'postMediaType',
+				type: 'options',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createSinglePost'],
+					},
+				},
+				options: [
+					{ name: 'Image', value: 'IMAGE' },
+					{ name: 'Video', value: 'VIDEO' },
+				],
+				default: 'IMAGE',
+				description: 'Type of media for the post',
+			},
+			{
+				displayName: 'Image URL',
+				name: 'postImageUrl',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createSinglePost'],
+						postMediaType: ['IMAGE'],
+					},
+				},
+				default: '',
+				placeholder: 'https://example.com/image.jpg',
+				description: 'Public URL of the image (must be HTTPS)',
+			},
+			{
+				displayName: 'Video URL',
+				name: 'postVideoUrl',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createSinglePost'],
+						postMediaType: ['VIDEO'],
+					},
+				},
+				default: '',
+				placeholder: 'https://example.com/video.mp4',
+				description: 'Public URL of the video (must be HTTPS)',
+			},
+			{
+				displayName: 'Caption',
+				name: 'postCaption',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createSinglePost'],
+					},
+				},
+				default: '',
+				placeholder: 'Check out this amazing photo! #instagram',
+				description: 'Caption for the post (supports hashtags and @mentions)',
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'postAdditionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createSinglePost'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Location ID',
+						name: 'location_id',
+						type: 'string',
+						default: '',
+						placeholder: '123456789',
+						description: 'Facebook Page ID to tag the post location',
+					},
+					{
+						displayName: 'User Tags',
+						name: 'user_tags',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: 'Add User Tag',
+						description: 'Tag users in the photo',
+						options: [
+							{
+								name: 'tag',
+								displayName: 'Tag',
+								values: [
+									{
+										displayName: 'Username',
+										name: 'username',
+										type: 'string',
+										default: '',
+										placeholder: 'johndoe',
+										description: 'Instagram username to tag',
+									},
+									{
+										displayName: 'X Position',
+										name: 'x',
+										type: 'number',
+										typeOptions: {
+											minValue: 0,
+											maxValue: 1,
+											numberPrecision: 2,
+										},
+										default: 0.5,
+										description: 'X coordinate (0.0 to 1.0)',
+									},
+									{
+										displayName: 'Y Position',
+										name: 'y',
+										type: 'number',
+										typeOptions: {
+											minValue: 0,
+											maxValue: 1,
+											numberPrecision: 2,
+										},
+										default: 0.5,
+										description: 'Y coordinate (0.0 to 1.0)',
+									},
+								],
+							},
+						],
+					},
+					{
+						displayName: 'Product Tags',
+						name: 'product_tags',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: 'Add Product Tag',
+						description: 'Tag products in the photo (requires Instagram Shopping)',
+						options: [
+							{
+								name: 'tag',
+								displayName: 'Product Tag',
+								values: [
+									{
+										displayName: 'Product ID',
+										name: 'product_id',
+										type: 'string',
+										default: '',
+										placeholder: '1234567890',
+										description: 'Facebook catalog product ID',
+									},
+									{
+										displayName: 'X Position',
+										name: 'x',
+										type: 'number',
+										typeOptions: {
+											minValue: 0,
+											maxValue: 1,
+											numberPrecision: 2,
+										},
+										default: 0.5,
+										description: 'X coordinate (0.0 to 1.0)',
+									},
+									{
+										displayName: 'Y Position',
+										name: 'y',
+										type: 'number',
+										typeOptions: {
+											minValue: 0,
+											maxValue: 1,
+											numberPrecision: 2,
+										},
+										default: 0.5,
+										description: 'Y coordinate (0.0 to 1.0)',
+									},
+								],
+							},
+						],
+					},
+					{
+						displayName: 'Collaborators',
+						name: 'collaborators',
+						type: 'string',
+						default: '',
+						placeholder: '["17841400001234567","17841400009876543"]',
+						description: 'JSON array of Instagram account IDs to tag as collaborators',
+					},
+					{
+						displayName: 'Thumb Offset',
+						name: 'thumb_offset',
+						type: 'number',
+						displayOptions: {
+							show: {
+								'/postMediaType': ['VIDEO'],
+							},
+						},
+						default: 0,
+						description: 'Video thumbnail frame offset in milliseconds',
+					},
+					{
+						displayName: 'Share to Feed',
+						name: 'share_to_feed',
+						type: 'boolean',
+						default: true,
+						description: 'Whether to share this post to feed (for reels)',
+					},
+				],
+			},
+
+			// Create Carousel Post
+			{
+				displayName: 'Children',
+				name: 'carouselChildren',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+					minValues: 2,
+					maxValues: 10,
+				},
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createCarouselPost'],
+					},
+				},
+				default: {},
+				placeholder: 'Add Media Item',
+				description: 'Media items for the carousel (2-10 items)',
+				options: [
+					{
+						name: 'child',
+						displayName: 'Media Item',
+						values: [
+							{
+								displayName: 'Media Type',
+								name: 'media_type',
+								type: 'options',
+								options: [
+									{ name: 'Image', value: 'IMAGE' },
+									{ name: 'Video', value: 'VIDEO' },
+								],
+								default: 'IMAGE',
+								description: 'Type of media',
+							},
+							{
+								displayName: 'Image URL',
+								name: 'image_url',
+								type: 'string',
+								displayOptions: {
+									show: {
+										media_type: ['IMAGE'],
+									},
+								},
+								default: '',
+								placeholder: 'https://example.com/image.jpg',
+								description: 'Public URL of the image',
+							},
+							{
+								displayName: 'Video URL',
+								name: 'video_url',
+								type: 'string',
+								displayOptions: {
+									show: {
+										media_type: ['VIDEO'],
+									},
+								},
+								default: '',
+								placeholder: 'https://example.com/video.mp4',
+								description: 'Public URL of the video',
+							},
+							{
+								displayName: 'User Tags',
+								name: 'user_tags',
+								type: 'string',
+								default: '',
+								placeholder: '[{"username":"johndoe","x":0.5,"y":0.5}]',
+								description: 'JSON array of user tags for this media item',
+							},
+						],
+					},
+				],
+			},
+			{
+				displayName: 'Caption',
+				name: 'carouselCaption',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createCarouselPost'],
+					},
+				},
+				default: '',
+				placeholder: 'Swipe to see more! #carousel',
+				description: 'Caption for the carousel post',
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'carouselAdditionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createCarouselPost'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Location ID',
+						name: 'location_id',
+						type: 'string',
+						default: '',
+						placeholder: '123456789',
+						description: 'Facebook Page ID to tag the post location',
+					},
+					{
+						displayName: 'Collaborators',
+						name: 'collaborators',
+						type: 'string',
+						default: '',
+						placeholder: '["17841400001234567"]',
+						description: 'JSON array of Instagram account IDs to tag as collaborators',
+					},
+				],
+			},
+
+			// Create Reel
+			{
+				displayName: 'Video URL',
+				name: 'reelVideoUrl',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createReel'],
+					},
+				},
+				default: '',
+				placeholder: 'https://example.com/reel.mp4',
+				description: 'Public URL of the video (must be HTTPS, max 60 seconds)',
+			},
+			{
+				displayName: 'Caption',
+				name: 'reelCaption',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createReel'],
+					},
+				},
+				default: '',
+				placeholder: 'Check out this reel! #reels',
+				description: 'Caption for the reel',
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'reelAdditionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['createReel'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Cover URL',
+						name: 'cover_url',
+						type: 'string',
+						default: '',
+						placeholder: 'https://example.com/cover.jpg',
+						description: 'Public URL of the reel cover image',
+					},
+					{
+						displayName: 'Audio Name',
+						name: 'audio_name',
+						type: 'string',
+						default: '',
+						placeholder: 'Original Audio - Username',
+						description: 'Name of the audio track',
+					},
+					{
+						displayName: 'Location ID',
+						name: 'location_id',
+						type: 'string',
+						default: '',
+						placeholder: '123456789',
+						description: 'Facebook Page ID to tag the location',
+					},
+					{
+						displayName: 'Collaborators',
+						name: 'collaborators',
+						type: 'string',
+						default: '',
+						placeholder: '["17841400001234567"]',
+						description: 'JSON array of Instagram account IDs',
+					},
+					{
+						displayName: 'Share to Feed',
+						name: 'share_to_feed',
+						type: 'boolean',
+						default: true,
+						description: 'Whether to share this reel to feed',
+					},
+					{
+						displayName: 'Thumb Offset',
+						name: 'thumb_offset',
+						type: 'number',
+						default: 0,
+						description: 'Video thumbnail frame offset in milliseconds',
+					},
+				],
+			},
+
+			// Publish Post
+			{
+				displayName: 'Creation ID',
+				name: 'creationId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['publishPost'],
+					},
+				},
+				default: '',
+				placeholder: '17895695668004550',
+				description: 'ID of the media container to publish (from create operation)',
+			},
+
+			// ==================== Story Operations ====================
+			{
+				displayName: 'Media Type',
+				name: 'storyMediaType',
+				type: 'options',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['story'],
+						operation: ['createStory'],
+					},
+				},
+				options: [
+					{ name: 'Image', value: 'IMAGE' },
+					{ name: 'Video', value: 'VIDEO' },
+				],
+				default: 'IMAGE',
+				description: 'Type of media for the story',
+			},
+			{
+				displayName: 'Image URL',
+				name: 'storyImageUrl',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['story'],
+						operation: ['createStory'],
+						storyMediaType: ['IMAGE'],
+					},
+				},
+				default: '',
+				placeholder: 'https://example.com/story.jpg',
+				description: 'Public URL of the image (must be HTTPS)',
+			},
+			{
+				displayName: 'Video URL',
+				name: 'storyVideoUrl',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['story'],
+						operation: ['createStory'],
+						storyMediaType: ['VIDEO'],
+					},
+				},
+				default: '',
+				placeholder: 'https://example.com/story.mp4',
+				description: 'Public URL of the video (must be HTTPS, max 60 seconds)',
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'storyAdditionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['story'],
+						operation: ['createStory'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Location ID',
+						name: 'location_id',
+						type: 'string',
+						default: '',
+						placeholder: '123456789',
+						description: 'Facebook Page ID to tag the story location',
+					},
+					{
+						displayName: 'Collaborators',
+						name: 'collaborators',
+						type: 'string',
+						default: '',
+						placeholder: '["17841400001234567"]',
+						description: 'JSON array of Instagram account IDs',
+					},
+				],
+			},
+
 			// ==================== Get User Profile ====================
 			{
 				displayName: 'User ID',
@@ -1058,6 +1805,324 @@ export class Instagram implements INodeType {
 							body,
 						);
 						returnData.push({ json: responseData, pairedItem: { item: i } });
+					}
+				}
+
+				// ==================== Media Operations ====================
+				else if (resource === 'media') {
+					const igUserId = await getInstagramBusinessAccountId.call(this);
+
+					// ==================== List Media ====================
+					if (operation === 'listMedia') {
+						const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+						const fields = this.getNodeParameter('mediaFields', i) as string[];
+
+						const qs: any = {
+							fields: fields.join(','),
+						};
+
+						if (returnAll) {
+							const { instagramApiRequestAllItems } = await import('./GenericFunctions');
+							const responseData = await instagramApiRequestAllItems.call(
+								this,
+								'GET',
+								`/${igUserId}/media`,
+								{},
+								qs,
+							);
+							responseData.forEach((item: any) => {
+								returnData.push({ json: item, pairedItem: { item: i } });
+							});
+						} else {
+							const limit = this.getNodeParameter('limit', i) as number;
+							qs.limit = limit;
+
+							const responseData = await instagramApiRequest.call(
+								this,
+								'GET',
+								`/${igUserId}/media`,
+								{},
+								qs,
+							);
+
+							if (responseData.data) {
+								responseData.data.forEach((item: any) => {
+									returnData.push({ json: item, pairedItem: { item: i } });
+								});
+							}
+						}
+					}
+
+					// ==================== Get Media ====================
+					else if (operation === 'getMedia') {
+						const mediaId = this.getNodeParameter('mediaId', i) as string;
+						const fields = this.getNodeParameter('mediaDetailFields', i) as string[];
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'GET',
+							`/${mediaId}`,
+							{},
+							{ fields: fields.join(',') },
+						);
+						returnData.push({ json: responseData, pairedItem: { item: i } });
+					}
+
+					// ==================== Get Media Children ====================
+					else if (operation === 'getMediaChildren') {
+						const mediaId = this.getNodeParameter('mediaId', i) as string;
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'GET',
+							`/${mediaId}/children`,
+							{},
+							{ fields: 'id,media_type,media_url,permalink,timestamp' },
+						);
+
+						if (responseData.data) {
+							responseData.data.forEach((item: any) => {
+								returnData.push({ json: item, pairedItem: { item: i } });
+							});
+						}
+					}
+				}
+
+				// ==================== Post Operations ====================
+				else if (resource === 'post') {
+					const igUserId = await getInstagramBusinessAccountId.call(this);
+
+					// ==================== Create Single Post ====================
+					if (operation === 'createSinglePost') {
+						const mediaType = this.getNodeParameter('postMediaType', i) as string;
+						const caption = this.getNodeParameter('postCaption', i, '') as string;
+						const additionalOptions = this.getNodeParameter('postAdditionalOptions', i, {}) as any;
+
+						const body: any = {
+							caption,
+							media_type: mediaType,
+						};
+
+						if (mediaType === 'IMAGE') {
+							body.image_url = this.getNodeParameter('postImageUrl', i) as string;
+						} else {
+							body.video_url = this.getNodeParameter('postVideoUrl', i) as string;
+						}
+
+						// Add additional options
+						if (additionalOptions.location_id) {
+							body.location_id = additionalOptions.location_id;
+						}
+
+						if (additionalOptions.user_tags) {
+							const userTags = additionalOptions.user_tags.tag || [];
+							if (userTags.length > 0) {
+								body.user_tags = JSON.stringify(userTags);
+							}
+						}
+
+						if (additionalOptions.product_tags) {
+							const productTags = additionalOptions.product_tags.tag || [];
+							if (productTags.length > 0) {
+								body.product_tags = JSON.stringify(productTags);
+							}
+						}
+
+						if (additionalOptions.collaborators) {
+							body.collaborators = additionalOptions.collaborators;
+						}
+
+						if (additionalOptions.thumb_offset !== undefined) {
+							body.thumb_offset = additionalOptions.thumb_offset;
+						}
+
+						if (additionalOptions.share_to_feed !== undefined) {
+							body.share_to_feed = additionalOptions.share_to_feed;
+						}
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'POST',
+							`/${igUserId}/media`,
+							body,
+						);
+						returnData.push({ json: responseData, pairedItem: { item: i } });
+					}
+
+					// ==================== Create Carousel Post ====================
+					else if (operation === 'createCarouselPost') {
+						const childrenData = this.getNodeParameter('carouselChildren', i) as any;
+						const caption = this.getNodeParameter('carouselCaption', i, '') as string;
+						const additionalOptions = this.getNodeParameter('carouselAdditionalOptions', i, {}) as any;
+
+						// Step 1: Create child media containers
+						const childIds: string[] = [];
+
+						if (childrenData.child && Array.isArray(childrenData.child)) {
+							for (const child of childrenData.child) {
+								const childBody: any = {
+									is_carousel_item: true,
+								};
+
+								if (child.media_type === 'IMAGE') {
+									childBody.image_url = child.image_url;
+									childBody.media_type = 'IMAGE';
+								} else {
+									childBody.video_url = child.video_url;
+									childBody.media_type = 'VIDEO';
+								}
+
+								if (child.user_tags) {
+									childBody.user_tags = child.user_tags;
+								}
+
+								const childResponse = await instagramApiRequest.call(
+									this,
+									'POST',
+									`/${igUserId}/media`,
+									childBody,
+								);
+
+								if (childResponse.id) {
+									childIds.push(childResponse.id);
+								}
+							}
+						}
+
+						// Step 2: Create carousel container
+						const carouselBody: any = {
+							media_type: 'CAROUSEL',
+							children: childIds.join(','),
+							caption,
+						};
+
+						if (additionalOptions.location_id) {
+							carouselBody.location_id = additionalOptions.location_id;
+						}
+
+						if (additionalOptions.collaborators) {
+							carouselBody.collaborators = additionalOptions.collaborators;
+						}
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'POST',
+							`/${igUserId}/media`,
+							carouselBody,
+						);
+						returnData.push({ json: responseData, pairedItem: { item: i } });
+					}
+
+					// ==================== Create Reel ====================
+					else if (operation === 'createReel') {
+						const videoUrl = this.getNodeParameter('reelVideoUrl', i) as string;
+						const caption = this.getNodeParameter('reelCaption', i, '') as string;
+						const additionalOptions = this.getNodeParameter('reelAdditionalOptions', i, {}) as any;
+
+						const body: any = {
+							media_type: 'REELS',
+							video_url: videoUrl,
+							caption,
+						};
+
+						if (additionalOptions.cover_url) {
+							body.cover_url = additionalOptions.cover_url;
+						}
+
+						if (additionalOptions.audio_name) {
+							body.audio_name = additionalOptions.audio_name;
+						}
+
+						if (additionalOptions.location_id) {
+							body.location_id = additionalOptions.location_id;
+						}
+
+						if (additionalOptions.collaborators) {
+							body.collaborators = additionalOptions.collaborators;
+						}
+
+						if (additionalOptions.share_to_feed !== undefined) {
+							body.share_to_feed = additionalOptions.share_to_feed;
+						}
+
+						if (additionalOptions.thumb_offset !== undefined) {
+							body.thumb_offset = additionalOptions.thumb_offset;
+						}
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'POST',
+							`/${igUserId}/media`,
+							body,
+						);
+						returnData.push({ json: responseData, pairedItem: { item: i } });
+					}
+
+					// ==================== Publish Post ====================
+					else if (operation === 'publishPost') {
+						const creationId = this.getNodeParameter('creationId', i) as string;
+
+						const body = {
+							creation_id: creationId,
+						};
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'POST',
+							`/${igUserId}/media_publish`,
+							body,
+						);
+						returnData.push({ json: responseData, pairedItem: { item: i } });
+					}
+				}
+
+				// ==================== Story Operations ====================
+				else if (resource === 'story') {
+					const igUserId = await getInstagramBusinessAccountId.call(this);
+
+					// ==================== Create Story ====================
+					if (operation === 'createStory') {
+						const mediaType = this.getNodeParameter('storyMediaType', i) as string;
+						const additionalOptions = this.getNodeParameter('storyAdditionalOptions', i, {}) as any;
+
+						const body: any = {
+							media_type: mediaType,
+						};
+
+						if (mediaType === 'IMAGE') {
+							body.image_url = this.getNodeParameter('storyImageUrl', i) as string;
+						} else {
+							body.video_url = this.getNodeParameter('storyVideoUrl', i) as string;
+						}
+
+						if (additionalOptions.location_id) {
+							body.location_id = additionalOptions.location_id;
+						}
+
+						if (additionalOptions.collaborators) {
+							body.collaborators = additionalOptions.collaborators;
+						}
+
+						// Create story container
+						const createResponse = await instagramApiRequest.call(
+							this,
+							'POST',
+							`/${igUserId}/media`,
+							body,
+						);
+
+						// Auto-publish story (stories are typically published immediately)
+						if (createResponse.id) {
+							const publishResponse = await instagramApiRequest.call(
+								this,
+								'POST',
+								`/${igUserId}/media_publish`,
+								{ creation_id: createResponse.id },
+							);
+							returnData.push({ json: publishResponse, pairedItem: { item: i } });
+						} else {
+							returnData.push({ json: createResponse, pairedItem: { item: i } });
+						}
 					}
 				}
 

@@ -98,3 +98,60 @@ export interface IUserProfile {
 	username?: string;
 	profile_pic?: string;
 }
+
+export interface IMediaObject {
+	id: string;
+	media_type?: 'IMAGE' | 'VIDEO' | 'CAROUSEL_ALBUM';
+	media_url?: string;
+	permalink?: string;
+	caption?: string;
+	timestamp?: string;
+	like_count?: number;
+	comments_count?: number;
+	owner?: {
+		id: string;
+		username?: string;
+	};
+	thumbnail_url?: string;
+	children?: {
+		data: IMediaObject[];
+	};
+}
+
+export interface IPostContainer {
+	id: string;
+	status_code?: string;
+}
+
+export interface IUserTag {
+	username: string;
+	x: number;
+	y: number;
+}
+
+export interface IProductTag {
+	product_id: string;
+	x: number;
+	y: number;
+}
+
+export interface ICarouselChild {
+	media_type: 'IMAGE' | 'VIDEO';
+	image_url?: string;
+	video_url?: string;
+	user_tags?: string;
+}
+
+export interface IStoryOptions {
+	location_id?: string;
+	collaborators?: string;
+}
+
+export interface IPostOptions extends IStoryOptions {
+	user_tags?: string;
+	product_tags?: string;
+	thumb_offset?: number;
+	share_to_feed?: boolean;
+	cover_url?: string;
+	audio_name?: string;
+}
