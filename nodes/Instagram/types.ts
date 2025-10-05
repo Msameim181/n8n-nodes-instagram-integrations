@@ -66,6 +66,33 @@ export interface IWebhookEntry {
 	id: string;
 	time: number;
 	messaging?: IMessagingEvent[];
+	changes?: IWebhookChange[];
+}
+
+export interface IWebhookChange {
+	field: string;
+	value: ICommentValue | IMentionValue | any;
+}
+
+export interface ICommentValue {
+	id: string;
+	media: {
+		id: string;
+		media_product_type: string;
+	};
+	text: string;
+	from: {
+		id: string;
+		username: string;
+	};
+	parent_id?: string;
+}
+
+export interface IMentionValue {
+	id: string;
+	media_id: string;
+	comment_id?: string;
+	text?: string;
 }
 
 export interface IMessagingEvent {

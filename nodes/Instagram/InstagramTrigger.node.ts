@@ -10,7 +10,7 @@ import type {
 import { NodeOperationError } from 'n8n-workflow';
 
 import { validateSignature } from './GenericFunctions';
-import type { IInstagramWebhook, IMessagingEvent } from './types';
+import type { IInstagramWebhook, IMessagingEvent, IWebhookChange, ICommentValue, IMentionValue } from './types';
 
 export class InstagramTrigger implements INodeType {
 	description: INodeTypeDescription = {
@@ -24,7 +24,8 @@ export class InstagramTrigger implements INodeType {
 			name: 'Instagram Trigger',
 		},
 		inputs: [],
-		outputs: ['main'],
+		outputs: ['main', 'main'],
+		outputNames: ['Messages/Postbacks/Opt-ins', 'Comments/Mentions'],
 		credentials: [
 			{
 				name: 'instagramOAuth2Api',
@@ -52,19 +53,29 @@ export class InstagramTrigger implements INodeType {
 				type: 'multiOptions',
 				options: [
 					{
+						name: 'Comments',
+						value: 'comments',
+						description: 'Trigger when someone comments on your media',
+					},
+					{
+						name: 'Mentions',
+						value: 'mentions',
+						description: 'Trigger when someone mentions you in a comment or story',
+					},
+					{
 						name: 'Messages',
 						value: 'messages',
 						description: 'Trigger on new messages received',
 					},
 					{
-						name: 'Postbacks',
-						value: 'messaging_postbacks',
-						description: 'Trigger when user clicks a button',
-					},
-					{
 						name: 'Opt-Ins',
 						value: 'messaging_optins',
 						description: 'Trigger when user opts in',
+					},
+					{
+						name: 'Postbacks',
+						value: 'messaging_postbacks',
+						description: 'Trigger when user clicks a button',
 					},
 				],
 				default: ['messages'],
@@ -148,10 +159,12 @@ export class InstagramTrigger implements INodeType {
 
 			// Parse webhook payload
 			const webhookData = bodyData as unknown as IInstagramWebhook;
-			const returnData: INodeExecutionData[] = [];
+			const messagingData: INodeExecutionData[] = []; // Output 0: Messages, Postbacks, Opt-ins
+			const contentData: INodeExecutionData[] = []; // Output 1: Comments, Mentions
 			const events = this.getNodeParameter('events', []) as string[];
 
 			for (const entry of webhookData.entry || []) {
+				// Handle messaging events (messages, postbacks, opt-ins)
 				if (entry.messaging) {
 					for (const messagingEvent of entry.messaging as IMessagingEvent[]) {
 						// Extract message data
@@ -192,14 +205,64 @@ export class InstagramTrigger implements INodeType {
 						}
 
 						if (shouldInclude) {
-							returnData.push({ json: data });
+							messagingData.push({ json: data });
+						}
+					}
+				}
+
+				// Handle changes events (comments, mentions)
+				if (entry.changes) {
+					for (const change of entry.changes as IWebhookChange[]) {
+						// Handle comment events
+						if (change.field === 'comments' && events.includes('comments')) {
+							const commentValue = change.value as ICommentValue;
+							const data: IDataObject = {
+								eventType: 'comment',
+								commentId: commentValue.id,
+								text: commentValue.text,
+								mediaId: commentValue.media.id,
+								mediaProductType: commentValue.media.media_product_type,
+								fromUserId: commentValue.from.id,
+								fromUsername: commentValue.from.username,
+								entryId: entry.id,
+								timestamp: entry.time,
+							};
+							if (commentValue.parent_id) {
+								data.parentCommentId = commentValue.parent_id;
+								data.isReply = true;
+							} else {
+								data.isReply = false;
+							}
+							contentData.push({ json: data });
+						}
+
+						// Handle mention events
+						if (change.field === 'mentions' && events.includes('mentions')) {
+							const mentionValue = change.value as IMentionValue;
+							const data: IDataObject = {
+								eventType: 'mention',
+								mentionId: mentionValue.id,
+								mediaId: mentionValue.media_id,
+								entryId: entry.id,
+								timestamp: entry.time,
+							};
+							if (mentionValue.comment_id) {
+								data.commentId = mentionValue.comment_id;
+								data.mentionType = 'comment';
+							} else {
+								data.mentionType = 'story';
+							}
+							if (mentionValue.text) {
+								data.text = mentionValue.text;
+							}
+							contentData.push({ json: data });
 						}
 					}
 				}
 			}
 
 			return {
-				workflowData: [returnData],
+				workflowData: [messagingData, contentData],
 			};
 		}
 
