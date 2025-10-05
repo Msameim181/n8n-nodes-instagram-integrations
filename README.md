@@ -29,7 +29,9 @@ This package provides comprehensive Instagram integration for n8n workflows, ena
 
 ### 🔐 OAuth2 Authentication
 - **One-click authentication** - Secure OAuth2 flow similar to Google Drive
-- **Automatic token refresh** - n8n handles token lifecycle
+- **🆕 Automatic long-lived tokens** - Short-lived tokens (1 hour) automatically exchanged for long-lived tokens (60 days)
+- **🆕 Automatic token refresh** - Tokens refresh automatically before expiration (zero configuration)
+- **🆕 No more "refreshToken is required" errors** - Smart token lifecycle management prevents expiration issues
 - **Multiple credential types** - OAuth2 or manual access token
 - **Auto-discovery** - Automatically fetches Instagram Business Account ID
 
@@ -263,7 +265,80 @@ services:
 
 ---
 
-## 🔧 Configuration
+## � Token Management (v1.5.0+)
+
+### Automatic Long-Lived Token System
+
+Instagram uses a two-tier token system that this package **automatically manages** for you:
+
+| Token Type | Validity | Management |
+|------------|----------|------------|
+| Short-lived | 1 hour | Received from OAuth |
+| Long-lived | 60 days | **Auto-exchanged** on first use |
+| Refreshed | 60 days | **Auto-refreshed** before expiration |
+
+### How It Works
+
+```
+OAuth Authentication (User action)
+         ↓
+Short-lived Token (1 hour)
+         ↓
+First API Call (automatic)
+         ↓
+Long-lived Token Exchange (automatic)
+         ↓
+Token Valid for 60 Days
+         ↓
+Auto-refresh at 53 Days (automatic)
+         ↓
+Another 60 Days of Validity
+```
+
+### Key Features
+
+✅ **Zero Configuration** - Everything happens automatically  
+✅ **No More Errors** - "refreshToken is required" error is eliminated  
+✅ **Smart Refresh** - Tokens refresh when at least 24 hours old and expiring within 7 days  
+✅ **Fallback Protection** - If refresh fails, attempts to exchange current OAuth token  
+✅ **Secure Storage** - All tokens encrypted in N8N credential system  
+
+### Best Practices
+
+1. **Keep Workflows Active**: Run at least once every 50 days to maintain token validity
+2. **Monitor Health**: Create a weekly health-check workflow (optional)
+3. **Handle Errors Gracefully**: Use `continueOnFail` for robust error handling
+
+### Token Lifecycle Example
+
+```typescript
+// Day 1: OAuth authentication
+User authenticates → Short-lived token (expires in 1 hour)
+
+// Day 1: First workflow run
+First API call → Automatic exchange → Long-lived token (expires in 60 days)
+
+// Day 53: Automatic refresh (7 days before expiry)
+API call → Token check → Auto-refresh → New long-lived token (expires in 60 days)
+
+// Repeat cycle every ~53 days as long as workflows are active
+```
+
+### What If Token Expires?
+
+If a workflow is inactive for 60+ days:
+1. Token expires and cannot be refreshed
+2. Workflow shows error: "Instagram access token has expired"
+3. **Solution**: Reconnect your Instagram OAuth2 credential (takes 30 seconds)
+
+### Learn More
+
+📘 [**TOKEN_MANAGEMENT.md**](./docs/TOKEN_MANAGEMENT.md) - Comprehensive token management guide  
+🔧 [**TOKEN_MANAGEMENT_IMPLEMENTATION.md**](./docs/TOKEN_MANAGEMENT_IMPLEMENTATION.md) - Technical implementation details
+
+---
+
+## �🔧 Configuration
 
 ### Webhook Setup
 
