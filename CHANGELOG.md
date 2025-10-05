@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0] - 2025-10-05
+
+### Added
+- **Automatic Long-Lived Token Management:**
+  - **Automatic Token Exchange** - Short-lived tokens (1 hour) are automatically exchanged for long-lived tokens (60 days)
+  - **Automatic Token Refresh** - Long-lived tokens are automatically refreshed before expiration
+  - **Token Metadata Storage** - Tokens now include expiry tracking and type information
+  - **Smart Refresh Logic** - Tokens refresh when:
+    - At least 24 hours old
+    - Expiring within 7 days
+  - **Fallback Mechanisms** - If refresh fails, attempts to exchange current OAuth token
+  - **Zero Configuration** - Works automatically after initial OAuth authentication
+
+### Changed
+- **OAuth2 Credentials Enhanced:**
+  - Added `tokenType` field to track token lifecycle
+  - Added `tokenExpiresAt` field for expiry timestamp
+  - Added `longLivedToken` field for secure token storage
+  - Implemented `authenticate()` hook for automatic token management
+  - Implemented `preAuthentication()` hook for token validation
+
+### Fixed
+- **Critical:** Resolved "refreshToken is required" error after a few hours
+- **Critical:** Instagram API calls no longer fail due to expired short-lived tokens
+- Token expiry now properly handled with automatic renewal
+
+### Technical Details
+- Token exchange endpoint: `https://graph.instagram.com/access_token?grant_type=ig_exchange_token`
+- Token refresh endpoint: `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token`
+- Short-lived tokens: 1 hour validity (OAuth default)
+- Long-lived tokens: 60 days validity (auto-exchanged)
+- Refresh window: 7 days before expiry
+- Minimum token age for refresh: 24 hours
+
+---
+
 ## [1.4.0] - 2025-10-05
 
 ### Added
