@@ -20,9 +20,9 @@ export async function getInstagramBusinessAccountId(
 	try {
 		const options: IRequestOptions = {
 			method: 'GET',
-			url: 'https://graph.facebook.com/v23.0/me/accounts',
+			url: 'https://graph.facebook.com/v23.0/me',
 			qs: {
-				fields: 'instagram_business_account',
+				fields: 'id,name,account_type,media_count,user_id,username',
 			},
 			json: true,
 		};
@@ -30,7 +30,7 @@ export async function getInstagramBusinessAccountId(
 		const response = await this.helpers.requestOAuth2.call(this, 'instagramOAuth2Api', options);
 		
 		if (response.data && response.data.length > 0) {
-			const igAccount = response.data[0].instagram_business_account;
+			const igAccount = response.data[0];
 			if (igAccount && igAccount.id) {
 				return igAccount.id;
 			}

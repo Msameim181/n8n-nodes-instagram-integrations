@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-instagram-integrations",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "N8N nodes for Instagram API integration with OAuth2 authentication",
   "keywords": [
     "n8n-community-node-package",
