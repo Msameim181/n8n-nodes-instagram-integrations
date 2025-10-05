@@ -832,7 +832,6 @@ export class Instagram implements INodeType {
 				},
 				typeOptions: {
 					minValue: 1,
-					maxValue: 100,
 				},
 				default: 50,
 				description: 'Max number of results to return',
@@ -925,8 +924,7 @@ export class Instagram implements INodeType {
 						operation: ['createSinglePost'],
 					},
 				},
-				options: [
-					{ name: 'Image', value: 'IMAGE' },
+				options: [					{ name: 'Image', value: 'IMAGE' },
 					{ name: 'Video', value: 'VIDEO' },
 				],
 				default: 'IMAGE',
@@ -992,63 +990,20 @@ export class Instagram implements INodeType {
 				},
 				options: [
 					{
+						displayName: 'Collaborators',
+						name: 'collaborators',
+						type: 'string',
+						default: '',
+						placeholder: '["17841400001234567","17841400009876543"]',
+						description: 'JSON array of Instagram account IDs to tag as collaborators',
+					},
+					{
 						displayName: 'Location ID',
 						name: 'location_id',
 						type: 'string',
 						default: '',
 						placeholder: '123456789',
 						description: 'Facebook Page ID to tag the post location',
-					},
-					{
-						displayName: 'User Tags',
-						name: 'user_tags',
-						type: 'fixedCollection',
-						typeOptions: {
-							multipleValues: true,
-						},
-						default: {},
-						placeholder: 'Add User Tag',
-						description: 'Tag users in the photo',
-						options: [
-							{
-								name: 'tag',
-								displayName: 'Tag',
-								values: [
-									{
-										displayName: 'Username',
-										name: 'username',
-										type: 'string',
-										default: '',
-										placeholder: 'johndoe',
-										description: 'Instagram username to tag',
-									},
-									{
-										displayName: 'X Position',
-										name: 'x',
-										type: 'number',
-										typeOptions: {
-											minValue: 0,
-											maxValue: 1,
-											numberPrecision: 2,
-										},
-										default: 0.5,
-										description: 'X coordinate (0.0 to 1.0)',
-									},
-									{
-										displayName: 'Y Position',
-										name: 'y',
-										type: 'number',
-										typeOptions: {
-											minValue: 0,
-											maxValue: 1,
-											numberPrecision: 2,
-										},
-										default: 0.5,
-										description: 'Y coordinate (0.0 to 1.0)',
-									},
-								],
-							},
-						],
 					},
 					{
 						displayName: 'Product Tags',
@@ -1102,13 +1057,13 @@ export class Instagram implements INodeType {
 						],
 					},
 					{
-						displayName: 'Collaborators',
-						name: 'collaborators',
-						type: 'string',
-						default: '',
-						placeholder: '["17841400001234567","17841400009876543"]',
-						description: 'JSON array of Instagram account IDs to tag as collaborators',
+						displayName: 'Share to Feed',
+						name: 'share_to_feed',
+						type: 'boolean',
+						default: true,
+						description: 'Whether to share this post to feed (for reels)',
 					},
+				
 					{
 						displayName: 'Thumb Offset',
 						name: 'thumb_offset',
@@ -1122,13 +1077,56 @@ export class Instagram implements INodeType {
 						description: 'Video thumbnail frame offset in milliseconds',
 					},
 					{
-						displayName: 'Share to Feed',
-						name: 'share_to_feed',
-						type: 'boolean',
-						default: true,
-						description: 'Whether to share this post to feed (for reels)',
-					},
-				],
+						displayName: 'User Tags',
+						name: 'user_tags',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: 'Add User Tag',
+						description: 'Tag users in the photo',
+						options: [
+							{
+								name: 'tag',
+								displayName: 'Tag',
+								values: [
+									{
+										displayName: 'Username',
+										name: 'username',
+										type: 'string',
+										default: '',
+										placeholder: 'johndoe',
+										description: 'Instagram username to tag',
+									},
+									{
+										displayName: 'X Position',
+										name: 'x',
+										type: 'number',
+										typeOptions: {
+											minValue: 0,
+											maxValue: 1,
+											numberPrecision: 2,
+										},
+										default: 0.5,
+										description: 'X coordinate (0.0 to 1.0)',
+									},
+									{
+										displayName: 'Y Position',
+										name: 'y',
+										type: 'number',
+										typeOptions: {
+											minValue: 0,
+											maxValue: 1,
+											numberPrecision: 2,
+										},
+										default: 0.5,
+										description: 'Y coordinate (0.0 to 1.0)',
+									},
+								],
+							},
+						],
+					},],
 			},
 
 			// Create Carousel Post
@@ -1293,7 +1291,22 @@ export class Instagram implements INodeType {
 						operation: ['createReel'],
 					},
 				},
-				options: [
+				options: [					{
+						displayName: 'Audio Name',
+						name: 'audio_name',
+						type: 'string',
+						default: '',
+						placeholder: 'Original Audio - Username',
+						description: 'Name of the audio track',
+					},
+					{
+						displayName: 'Collaborators',
+						name: 'collaborators',
+						type: 'string',
+						default: '',
+						placeholder: '["17841400001234567"]',
+						description: 'JSON array of Instagram account IDs',
+					},
 					{
 						displayName: 'Cover URL',
 						name: 'cover_url',
@@ -1303,28 +1316,12 @@ export class Instagram implements INodeType {
 						description: 'Public URL of the reel cover image',
 					},
 					{
-						displayName: 'Audio Name',
-						name: 'audio_name',
-						type: 'string',
-						default: '',
-						placeholder: 'Original Audio - Username',
-						description: 'Name of the audio track',
-					},
-					{
 						displayName: 'Location ID',
 						name: 'location_id',
 						type: 'string',
 						default: '',
 						placeholder: '123456789',
 						description: 'Facebook Page ID to tag the location',
-					},
-					{
-						displayName: 'Collaborators',
-						name: 'collaborators',
-						type: 'string',
-						default: '',
-						placeholder: '["17841400001234567"]',
-						description: 'JSON array of Instagram account IDs',
 					},
 					{
 						displayName: 'Share to Feed',
