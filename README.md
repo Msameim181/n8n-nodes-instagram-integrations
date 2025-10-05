@@ -71,12 +71,18 @@ This package provides comprehensive Instagram integration for n8n workflows, ena
 - 🔍 **Get Media Details** - Retrieve specific media information
 - 👶 **Get Carousel Children** - Access individual carousel items
 
-### �🔔 Instagram Trigger Node
+###  Instagram Trigger Node
 
 **Webhook Events:**
 - 💬 **New Messages** - Trigger on incoming messages
 - 🔘 **Postback Events** - Handle button clicks and interactions
 - ✅ **Opt-in Events** - Process user consent actions
+- 💭 **Comments** (NEW!) - Trigger when someone comments on your media
+- 🏷️ **Mentions** (NEW!) - Trigger when someone mentions you in comments or stories
+
+**Dual Output System:**
+- **Output 1** (Messages/Postbacks/Opt-ins) - Direct messaging events
+- **Output 2** (Comments/Mentions) - Content engagement events
 
 **Security Features:**
 - 🔒 Webhook signature validation (X-Hub-Signature-256)

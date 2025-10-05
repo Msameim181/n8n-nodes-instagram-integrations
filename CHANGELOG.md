@@ -7,7 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.4.0] - 2025-10-05
+
+### Added
+- **Instagram Trigger Node - Dual Output System:**
+  - **Comments Webhook** - Trigger when someone comments on your media
+  - **Mentions Webhook** - Trigger when someone mentions you in comments or stories
+  - **Dual Outputs** - Separate outputs for messaging events and content engagement
+    - Output 1: Messages, Postbacks, Opt-ins
+    - Output 2: Comments, Mentions
+  - **Enhanced Event Data:**
+    - Comment events: text, media ID, user info, reply detection
+    - Mention events: media ID, mention type (comment/story), text
+
+### Changed
+- **Instagram Trigger Node** now supports dual outputs for better event management
+- Improved webhook handler to process both messaging and content engagement events
+- Alphabetized event options for better UX
+
+
+## [1.3.12] - 2025-10-05
 
 ### Added
 - **New Resource: Media** - Manage existing Instagram media objects
