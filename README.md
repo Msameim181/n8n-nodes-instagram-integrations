@@ -50,7 +50,28 @@ This package provides comprehensive Instagram integration for n8n workflows, ena
 **User Management:**
 - 👤 **Get User Profile** - Retrieve user information (name, username, profile picture)
 
-### 🔔 Instagram Trigger Node
+### � Instagram Content Publishing (NEW!)
+
+**Post Creation:**
+- 📷 **Single Posts** - Create image or video feed posts
+- 🎞️ **Carousel Posts** - Multi-media posts (2-10 images/videos)
+- 🎬 **Reels** - Short-form videos up to 60 seconds
+- 📋 **Stories** - 24-hour temporary content
+
+**Advanced Features:**
+- 🏷️ **User Tagging** - Tag up to 20 users with precise positioning
+- 🛍️ **Product Tagging** - Tag products from Facebook catalog
+- 🤝 **Collaborators** - Tag other accounts as collaborators
+- 📍 **Location Tagging** - Add location stickers to posts
+- 🎨 **Custom Thumbnails** - Set video thumbnail positions
+- 🎵 **Audio Attribution** - Name audio tracks in reels
+
+**Media Management:**
+- 📊 **List Media** - Get paginated list of your media
+- 🔍 **Get Media Details** - Retrieve specific media information
+- 👶 **Get Carousel Children** - Access individual carousel items
+
+### �🔔 Instagram Trigger Node
 
 **Webhook Events:**
 - 💬 **New Messages** - Trigger on incoming messages
@@ -73,10 +94,17 @@ This package provides comprehensive Instagram integration for n8n workflows, ena
 4. **n8n Instance** - Self-hosted or cloud (version 0.196.0+)
 
 ### Required Permissions
+
+**For Messaging:**
 - `instagram_basic` - Basic profile access
 - `instagram_manage_messages` - Send and receive messages
 - `pages_manage_metadata` - Webhook subscriptions
 - `pages_read_engagement` - Read engagement data
+
+**For Content Publishing (NEW):**
+- `instagram_content_publish` - Create and publish posts, reels, and stories
+- `pages_show_list` - List Facebook pages
+- `catalog_management` - Product tagging (optional, for Instagram Shopping)
 
 ### Technical Requirements
 - Node.js 18.15+ or 20.10+
@@ -170,24 +198,27 @@ services:
 ### Core Guides
 - 📘 [**CHANGELOG.md**](./CHANGELOG.md) - Version history and updates
 - 🔧 [**IMPLEMENTATION_GUIDE.md**](./IMPLEMENTATION_GUIDE.md) - Developer documentation
-- 📋 [**Instruction Files**](./.github/instructions/) - Technical specifications
+- � [**AUTHENTICATION_GUIDE.md**](./AUTHENTICATION_GUIDE.md) - Setup and OAuth guide
+- �📋 [**Instruction Files**](./.github/instructions/) - Technical specifications
+
+### Content Publishing Guides (NEW!)
+- 🚀 [**QUICKSTART.md**](./QUICKSTART.md) - Get started in 5 minutes
+- 📸 [**POST_STORY_GUIDE.md**](./POST_STORY_GUIDE.md) - Complete post/story creation guide
+- 💡 [**EXAMPLES.md**](./EXAMPLES.md) - Code examples and workflow patterns
+- 📊 [**FEATURE_SUMMARY.md**](./FEATURE_SUMMARY.md) - Technical implementation details
 
 ### Example Workflows
 
-**1. Auto-Reply to Messages**
-```
-Webhook Trigger → Filter (new messages) → Instagram (send text) → Save to DB
-```
+**Messaging:**
+- Auto-Reply to Messages
+- Daily Announcements
+- Customer Support Bot
 
-**2. Send Daily Announcements**
-```
-Schedule (daily) → HTTP (fetch content) → Instagram (send template) → Log
-```
-
-**3. Customer Support Bot**
-```
-Webhook → Switch (keyword detection) → Instagram (quick replies) → CRM Update
-```
+**Content Publishing:**
+- Scheduled Daily Posts
+- Automated Carousels
+- Story Automation
+- Product Showcase Reels
 
 ### API Reference
 
@@ -201,8 +232,23 @@ Webhook → Switch (keyword detection) → Instagram (quick replies) → CRM Upd
 - `sendQuickReplies` - Quick response options
 - `uploadMedia` - Upload media files
 
+**Post Operations (NEW):**
+- `createSinglePost` - Create image/video posts
+- `createCarouselPost` - Multi-media carousels
+- `createReel` - Short-form videos
+- `publishPost` - Publish created content
+
+**Story Operations (NEW):**
+- `createStory` - Create and publish stories
+
+**Media Operations (NEW):**
+- `listMedia` - Get your media list
+- `getMedia` - Get media details
+- `getMediaChildren` - Get carousel children
+
 **User Operations:**
 - `getUserProfile` - Fetch user information
+- `getMyProfile` - Get authenticated account info
 
 **Webhook Events:**
 - `messages` - Incoming messages

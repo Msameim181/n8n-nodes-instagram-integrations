@@ -9,6 +9,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **New Resource: Media** - Manage existing Instagram media objects
+  - List Media - Get paginated list of media with customizable fields
+  - Get Media - Retrieve detailed information about specific media
+  - Get Media Children - Get child items from carousel albums
+- **New Resource: Post** - Full-featured content publishing
+  - Create Single Post - Create image or video feed posts with advanced options
+  - Create Carousel Post - Create multi-media carousels (2-10 items)
+  - Create Reel - Create Instagram Reels with custom covers and audio
+  - Publish Post - Publish created media containers
+- **New Resource: Story** - Instagram Stories creation
+  - Create Story - Create and auto-publish 24-hour stories
+- **Advanced Tagging Features:**
+  - User Tagging - Tag up to 20 users with precise positioning
+  - Product Tagging - Tag products from Facebook catalog (Instagram Shopping)
+  - Collaborator Tagging - Tag accounts as collaborators on posts
+  - Location Tagging - Add location stickers using Facebook Page IDs
+- **Enhanced Media Support:**
+  - Mixed media carousels (images + videos)
+  - Custom video thumbnail positioning
+  - Cover image support for reels
+  - Audio name attribution for reels
+- **Comprehensive Documentation:**
+  - POST_STORY_GUIDE.md - Complete feature guide
+  - EXAMPLES.md - Quick reference code examples
+  - FEATURE_SUMMARY.md - Technical implementation details
+- **New TypeScript Interfaces:**
+  - IMediaObject - Media object type definitions
+  - IPostContainer - Post container responses
+  - IUserTag - User tag positioning
+  - IProductTag - Product tag positioning
+  - ICarouselChild - Carousel item structure
+  - IPostOptions - Post creation options
+  - IStoryOptions - Story creation options
+
+### Changed
+- Enhanced Instagram.node.ts with 300+ new parameter fields
+- Extended execute() function with comprehensive post/story/media logic
+- Improved error handling for content publishing operations
+- Updated node description to reflect new capabilities
+
 ### Planned Features
 - Story mentions and replies support
 - Instagram comments automation
