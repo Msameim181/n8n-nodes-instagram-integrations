@@ -24,6 +24,7 @@ export class InstagramTrigger implements INodeType {
 			name: 'Instagram Trigger',
 		},
 		inputs: [],
+		// eslint-disable-next-line n8n-nodes-base/node-class-description-outputs-wrong
 		outputs: [
 			{ type: 'main', displayName: 'Messages' },
 			{ type: 'main', displayName: 'Postbacks' },
