@@ -2083,7 +2083,7 @@ export class Instagram implements INodeType {
 						const additionalOptions = this.getNodeParameter('storyAdditionalOptions', i, {}) as any;
 
 						const body: any = {
-							media_type: mediaType,
+							media_type: 'STORIES',  // Use STORIES media_type for stories
 						};
 
 						if (mediaType === 'IMAGE') {
@@ -2108,15 +2108,64 @@ export class Instagram implements INodeType {
 							body,
 						);
 
-						// Auto-publish story (stories are typically published immediately)
+						// Wait for container to be ready and auto-publish story
 						if (createResponse.id) {
+							const containerId = createResponse.id;
+							
+							// Poll status until media is ready (max 60 seconds)
+							let status = 'IN_PROGRESS';
+							let attempts = 0;
+							const maxAttempts = 30; // 30 attempts with 2 second intervals = 60 seconds max
+							
+							while (status === 'IN_PROGRESS' && attempts < maxAttempts) {
+								// Wait 2 seconds before checking status
+								await new Promise(resolve => setTimeout(resolve, 2000));
+								
+								// Check container status
+								const statusResponse = await instagramApiRequest.call(
+									this,
+									'GET',
+									`/${containerId}`,
+									{},
+									{ fields: 'status_code' },
+								);
+								
+								status = statusResponse.status_code || 'IN_PROGRESS';
+								attempts++;
+								
+								// If status is FINISHED, ready to publish
+								if (status === 'FINISHED') {
+									break;
+								}
+								
+								// If status is ERROR or EXPIRED, throw error
+								if (status === 'ERROR' || status === 'EXPIRED') {
+									throw new Error(`Story creation failed with status: ${status}. Please check your media file and try again.`);
+								}
+							}
+							
+							// If still IN_PROGRESS after max attempts, throw error
+							if (status === 'IN_PROGRESS') {
+								throw new Error('Story creation timed out. The media is taking too long to process. Please try with a smaller file or try again later.');
+							}
+							
+							// Publish the story
 							const publishResponse = await instagramApiRequest.call(
 								this,
 								'POST',
 								`/${igUserId}/media_publish`,
-								{ creation_id: createResponse.id },
+								{ creation_id: containerId },
 							);
-							returnData.push({ json: publishResponse, pairedItem: { item: i } });
+							
+							returnData.push({ 
+								json: {
+									...publishResponse,
+									status: 'published',
+									container_id: containerId,
+									attempts_taken: attempts,
+								}, 
+								pairedItem: { item: i } 
+							});
 						} else {
 							returnData.push({ json: createResponse, pairedItem: { item: i } });
 						}
