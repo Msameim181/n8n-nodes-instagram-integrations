@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.5] - 2025-10-16
+
+### Changed
+- **Token Management Architecture Refactored:**
+  - Moved token exchange and refresh logic from credential hooks to `GenericFunctions.ts`
+  - Removed `authenticate()` and `preAuthentication()` hooks from `InstagramOAuth2Api.credentials.ts`
+  - Implemented new `getAccessToken()` function for centralized token management
+  - Added in-memory token cache with validation logic
+  - Token validation now happens at request time instead of credential initialization
+  - Simplified credential file by removing 170+ lines of token management code
+
+- **API Request Pattern Improved:**
+  - Updated `instagramApiRequest()` to use `getAccessToken()` for automatic token refresh
+  - Changed from `helpers.requestOAuth2()` to `helpers.request()` with manual token injection
+  - Added access token query parameter automatically to all API requests
+  - Updated `getInstagramBusinessAccountId()` to use new token management system
+
+- **Token Cache Implementation:**
+  - Added `tokenCache` Map to store validated tokens per credential
+  - Cache keys based on client ID and partial access token
+  - Automatic cache invalidation when token expires within 24 hours
+  - Reduces unnecessary token refresh attempts
+
+- **Build System Updates:**
+  - Updated npm scripts to use `@n8n/node-cli` commands
+  - Changed `build` script to use `n8n-node build`
+  - Added `dev`, `dev:manual`, `link`, `unlink`, `test`, and `release` scripts
+  - Updated `lint` and `lintfix` to use `n8n-node` commands
+  - Simplified `prepublishOnly` to use `n8n-node prerelease`
+  - Updated ESLint from version 8.57.0 to 9.0.0
+  - Added `@n8n/node-cli@^0.13.0` as devDependency
+
+### Fixed
+- **Critical:** Token exchange/refresh now works correctly outside of credential hooks
+- **Critical:** Console logging now properly informs users about token updates
+- Token refresh logic now correctly calculates 90% lifetime threshold
+- Token age calculation fixed to properly determine refresh eligibility (24-hour minimum)
+- API requests no longer fail due to OAuth2 helper limitations
+
+### Technical Details
+- Token management moved to runtime execution context (GenericFunctions)
+- Credential hooks removed due to n8n framework limitations with OAuth2 token updates
+- Token lifecycle: OAuth → Exchange (60 days) → Refresh (when ≥90% lifetime and ≥24h old)
+- Console logs guide users to manually update credential fields with new tokens
+- Cache provides performance improvement for repeated requests within short timeframes
+
+### Developer Notes
+- The credential hooks approach was removed because n8n's OAuth2 system doesn't support credential updates from within hooks
+- New approach uses request-time token validation with manual credential updates
+- Users must manually copy console-logged token values into credential fields
+- Future improvement: Explore n8n credential update APIs for fully automated token storage
+
+---
+
 ## [1.5.0] - 2025-10-05
 
 ### Added
