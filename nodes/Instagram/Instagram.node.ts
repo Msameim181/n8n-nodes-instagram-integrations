@@ -4,6 +4,7 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
+import { NodeOperationError } from 'n8n-workflow';
 
 import { instagramApiRequest, getInstagramBusinessAccountId } from './GenericFunctions';
 import type { IButton, IGenericElement, IQuickReply } from './types';
@@ -2140,13 +2141,13 @@ export class Instagram implements INodeType {
 								
 								// If status is ERROR or EXPIRED, throw error
 								if (status === 'ERROR' || status === 'EXPIRED') {
-									throw new Error(`Story creation failed with status: ${status}. Please check your media file and try again.`);
+									throw new NodeOperationError(this.getNode(), `Story creation failed with status: ${status}. Please check your media file and try again.`);
 								}
 							}
 							
 							// If still IN_PROGRESS after max attempts, throw error
 							if (status === 'IN_PROGRESS') {
-								throw new Error('Story creation timed out. The media is taking too long to process. Please try with a smaller file or try again later.');
+								throw new NodeOperationError(this.getNode(), 'Story creation timed out. The media is taking too long to process. Please try with a smaller file or try again later.');
 							}
 							
 							// Publish the story
