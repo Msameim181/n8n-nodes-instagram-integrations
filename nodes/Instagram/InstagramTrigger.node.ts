@@ -87,6 +87,18 @@ export class InstagramTrigger implements INodeType {
 				description: 'The events to listen to',
 			},
 			{
+				displayName: 'Ignore Echo Messages',
+				name: 'ignoreEcho',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to ignore echo messages (messages sent by your own bot)',
+				displayOptions: {
+					show: {
+						events: ['messages'],
+					},
+				},
+			},
+			{
 				displayName:
 					'To set up the webhook, you need to configure it in your Meta App Dashboard. Use this webhook URL in the callback URL field.',
 				name: 'notice',
@@ -170,6 +182,7 @@ export class InstagramTrigger implements INodeType {
 			const commentsData: INodeExecutionData[] = [];  // Output 3: Comments
 			const mentionsData: INodeExecutionData[] = [];  // Output 4: Mentions
 			const events = this.getNodeParameter('events', []) as string[];
+			const ignoreEcho = this.getNodeParameter('ignoreEcho', true) as boolean;
 
 			for (const entry of webhookData.entry || []) {
 				// Handle messaging events (messages, postbacks, opt-ins)
@@ -183,20 +196,25 @@ export class InstagramTrigger implements INodeType {
 							entryId: entry.id,
 						};
 
-						// Handle message events
-						if (messagingEvent.message && events.includes('messages')) {
-							data.eventType = 'message';
-							data.messageId = messagingEvent.message.mid;
-							data.text = messagingEvent.message.text;
-							data.attachments = messagingEvent.message.attachments;
-							if (messagingEvent.message.quick_reply) {
-								data.quickReplyPayload = messagingEvent.message.quick_reply.payload;
-							}
-							data.isEcho = messagingEvent.message.is_echo || false;
-							messagesData.push({ json: data });
+					// Handle message events
+					if (messagingEvent.message && events.includes('messages')) {
+						const isEcho = messagingEvent.message.is_echo || false;
+						
+						// Skip echo messages if ignoreEcho is enabled
+						if (ignoreEcho && isEcho) {
+							continue;
 						}
-
-						// Handle postback events
+						
+						data.eventType = 'message';
+						data.messageId = messagingEvent.message.mid;
+						data.text = messagingEvent.message.text;
+						data.attachments = messagingEvent.message.attachments;
+						if (messagingEvent.message.quick_reply) {
+							data.quickReplyPayload = messagingEvent.message.quick_reply.payload;
+						}
+						data.isEcho = isEcho;
+						messagesData.push({ json: data });
+					}						// Handle postback events
 						if (messagingEvent.postback && events.includes('messaging_postbacks')) {
 							data.eventType = 'postback';
 							data.payload = messagingEvent.postback.payload;
