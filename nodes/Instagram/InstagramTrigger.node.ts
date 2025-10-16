@@ -24,7 +24,7 @@ export class InstagramTrigger implements INodeType {
 			name: 'Instagram Trigger',
 		},
 		inputs: [],
-		outputs: ['main', 'main'],
+		outputs: ['main'],
 		outputNames: ['Messages/Postbacks/Opt-ins', 'Comments/Mentions'],
 		credentials: [
 			{
