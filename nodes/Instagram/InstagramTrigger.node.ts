@@ -24,8 +24,13 @@ export class InstagramTrigger implements INodeType {
 			name: 'Instagram Trigger',
 		},
 		inputs: [],
-		outputs: ['main'],
-		outputNames: ['Messages/Postbacks/Opt-ins', 'Comments/Mentions'],
+		outputs: [
+			{ type: 'main', displayName: 'Messages' },
+			{ type: 'main', displayName: 'Postbacks' },
+			{ type: 'main', displayName: 'Opt-ins' },
+			{ type: 'main', displayName: 'Comments' },
+			{ type: 'main', displayName: 'Mentions' },
+		],
 		credentials: [
 			{
 				name: 'instagramOAuth2Api',
@@ -159,8 +164,11 @@ export class InstagramTrigger implements INodeType {
 
 			// Parse webhook payload
 			const webhookData = bodyData as unknown as IInstagramWebhook;
-			const messagingData: INodeExecutionData[] = []; // Output 0: Messages, Postbacks, Opt-ins
-			const contentData: INodeExecutionData[] = []; // Output 1: Comments, Mentions
+			const messagesData: INodeExecutionData[] = []; // Output 0: Messages
+			const postbacksData: INodeExecutionData[] = []; // Output 1: Postbacks
+			const optinsData: INodeExecutionData[] = [];    // Output 2: Opt-ins
+			const commentsData: INodeExecutionData[] = [];  // Output 3: Comments
+			const mentionsData: INodeExecutionData[] = [];  // Output 4: Mentions
 			const events = this.getNodeParameter('events', []) as string[];
 
 			for (const entry of webhookData.entry || []) {
@@ -175,7 +183,6 @@ export class InstagramTrigger implements INodeType {
 							entryId: entry.id,
 						};
 
-						let shouldInclude = false;
 						// Handle message events
 						if (messagingEvent.message && events.includes('messages')) {
 							data.eventType = 'message';
@@ -185,8 +192,8 @@ export class InstagramTrigger implements INodeType {
 							if (messagingEvent.message.quick_reply) {
 								data.quickReplyPayload = messagingEvent.message.quick_reply.payload;
 							}
-							shouldInclude = true;
 							data.isEcho = messagingEvent.message.is_echo || false;
+							messagesData.push({ json: data });
 						}
 
 						// Handle postback events
@@ -194,18 +201,14 @@ export class InstagramTrigger implements INodeType {
 							data.eventType = 'postback';
 							data.payload = messagingEvent.postback.payload;
 							data.title = messagingEvent.postback.title;
-							shouldInclude = true;
+							postbacksData.push({ json: data });
 						}
 
 						// Handle opt-in events
 						if (messagingEvent.optin && events.includes('messaging_optins')) {
 							data.eventType = 'optin';
 							data.ref = messagingEvent.optin.ref;
-							shouldInclude = true;
-						}
-
-						if (shouldInclude) {
-							messagingData.push({ json: data });
+							optinsData.push({ json: data });
 						}
 					}
 				}
@@ -233,7 +236,7 @@ export class InstagramTrigger implements INodeType {
 							} else {
 								data.isReply = false;
 							}
-							contentData.push({ json: data });
+							commentsData.push({ json: data });
 						}
 
 						// Handle mention events
@@ -255,14 +258,14 @@ export class InstagramTrigger implements INodeType {
 							if (mentionValue.text) {
 								data.text = mentionValue.text;
 							}
-							contentData.push({ json: data });
+							mentionsData.push({ json: data });
 						}
 					}
 				}
 			}
 
 			return {
-				workflowData: [messagingData, contentData],
+				workflowData: [messagesData, postbacksData, optinsData, commentsData, mentionsData],
 			};
 		}
 
