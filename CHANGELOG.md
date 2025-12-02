@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.0] - 2025-12-02
+
+### Added
+- **New Comment Resource** - Complete comment moderation support for Instagram posts
+  - **Get Comments**: Retrieve all comments on a media post with pagination support
+  - **Get Replies**: Get replies to a specific comment
+  - **Reply to Comment**: Post a public reply to a comment on your posts
+  - **Send Private Reply**: Send a private DM to a commenter (within 7-day window)
+  - **Delete Comment**: Delete a comment from your posts
+  - **Hide/Unhide Comment**: Toggle comment visibility without deleting
+
+### Technical Details
+- Uses Instagram Graph API endpoints:
+  - `GET /{media-id}/comments` - Get comments on media
+  - `GET /{comment-id}/replies` - Get replies to a comment
+  - `POST /{comment-id}/replies` - Reply to a comment publicly
+  - `POST /me/messages` with `comment_id` recipient - Send private reply
+  - `DELETE /{comment-id}` - Delete a comment
+  - `POST /{comment-id}` with `hide` parameter - Toggle visibility
+- Private replies can only be sent within 7 days of the comment
+- Only one private reply message can be sent per comment
+
+### Use Cases
+- Automate responses to comments on your posts
+- Send personalized DMs to engaged users who comment
+- Moderate comments by hiding or deleting inappropriate content
+- Build workflows that combine public replies with private follow-ups
+
+---
+
 ## [1.5.7] - 2025-12-02
 
 ### Fixed

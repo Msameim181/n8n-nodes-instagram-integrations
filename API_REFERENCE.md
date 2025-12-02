@@ -6,6 +6,7 @@ Complete API reference for n8n-nodes-instagram-integrations operations.
 
 - [Instagram Node](#instagram-node)
   - [Message Operations](#message-operations)
+  - [Comment Operations](#comment-operations)
   - [User Operations](#user-operations)
 - [Instagram Trigger Node](#instagram-trigger-node)
   - [Webhook Events](#webhook-events)
@@ -416,6 +417,266 @@ Upload media for publishing to Instagram feed, reels, or stories.
 
 ---
 
+### Comment Operations
+
+#### Get Comments
+
+Retrieve all comments on a specific Instagram media post.
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| Media ID | string | Yes | ID of the Instagram media post |
+| Return All | boolean | No | Retrieve all comments (default: false) |
+| Limit | number | No | Maximum number of comments to return (default: 50) |
+
+**Example:**
+
+```json
+{
+  "mediaId": "17895695668004550",
+  "returnAll": false,
+  "limit": 20
+}
+```
+
+**API Endpoint:** `GET /{media-id}/comments?fields=id,text,username,timestamp,like_count,replies_count`
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "17858391726040854",
+      "text": "Great post!",
+      "username": "follower123",
+      "timestamp": "2024-01-15T10:30:00+0000",
+      "like_count": 5,
+      "replies_count": 2
+    }
+  ],
+  "paging": {
+    "cursors": {
+      "after": "cursor_token"
+    }
+  }
+}
+```
+
+---
+
+#### Get Replies
+
+Retrieve replies to a specific comment.
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| Comment ID | string | Yes | ID of the parent comment |
+| Return All | boolean | No | Retrieve all replies (default: false) |
+| Limit | number | No | Maximum number of replies to return (default: 50) |
+
+**Example:**
+
+```json
+{
+  "commentId": "17858391726040854",
+  "returnAll": false,
+  "limit": 10
+}
+```
+
+**API Endpoint:** `GET /{comment-id}/replies?fields=id,text,username,timestamp,like_count`
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "17899876543210123",
+      "text": "Thanks for your support!",
+      "username": "youraccount",
+      "timestamp": "2024-01-15T11:00:00+0000",
+      "like_count": 2
+    }
+  ]
+}
+```
+
+---
+
+#### Reply to Comment
+
+Post a public reply to a comment on your media.
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| Comment ID | string | Yes | ID of the comment to reply to |
+| Reply Text | string | Yes | Text of your reply (max 8000 characters) |
+
+**Example:**
+
+```json
+{
+  "commentId": "17858391726040854",
+  "replyText": "Thanks for your feedback! 🙌"
+}
+```
+
+**API Endpoint:** `POST /{comment-id}/replies`
+
+**Request Body:**
+```json
+{
+  "message": "Thanks for your feedback! 🙌"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "17899876543210456"
+}
+```
+
+**Constraints:**
+- Reply text max length: 8000 characters
+- Must be replying to a comment on your own media
+- Supports @mentions (auto-tagging)
+
+---
+
+#### Send Private Reply
+
+Send a Direct Message to a user who commented on your media. This is the "Private Reply" feature available within the 7-day messaging window.
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| Comment ID | string | Yes | ID of the comment from the user |
+| Message Text | string | Yes | Text message to send privately |
+
+**Example:**
+
+```json
+{
+  "commentId": "17858391726040854",
+  "messageText": "Hey! Thanks for your comment. Here's an exclusive discount code: SAVE20"
+}
+```
+
+**API Endpoint:** `POST /me/messages`
+
+**Request Body:**
+```json
+{
+  "recipient": {
+    "comment_id": "17858391726040854"
+  },
+  "message": {
+    "text": "Hey! Thanks for your comment. Here's an exclusive discount code: SAVE20"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "recipient_id": "1234567890",
+  "message_id": "mid.xyz789"
+}
+```
+
+**Important Notes:**
+- ⏰ **7-Day Window**: Private replies must be sent within 7 days of the comment
+- 🔒 **First Contact**: This can initiate a DM conversation with users who haven't messaged you
+- 📌 **Use Case**: Perfect for sending promotional codes, exclusive offers, or private information
+- ⚠️ **Limitations**: Only works for comments on your own media posts
+
+---
+
+#### Delete Comment
+
+Delete a comment from your media post.
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| Comment ID | string | Yes | ID of the comment to delete |
+
+**Example:**
+
+```json
+{
+  "commentId": "17858391726040854"
+}
+```
+
+**API Endpoint:** `DELETE /{comment-id}`
+
+**Response:**
+```json
+{
+  "success": true
+}
+```
+
+**Notes:**
+- Can only delete comments on your own media
+- Can delete your own replies on any post
+- Deletion is permanent and cannot be undone
+
+---
+
+#### Hide/Unhide Comment
+
+Toggle the visibility of a comment. Hidden comments are not visible to the public but remain in your moderation queue.
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| Comment ID | string | Yes | ID of the comment to hide/unhide |
+| Hide | boolean | Yes | true to hide, false to unhide |
+
+**Example:**
+
+```json
+{
+  "commentId": "17858391726040854",
+  "hide": true
+}
+```
+
+**API Endpoint:** `POST /{comment-id}`
+
+**Request Body:**
+```json
+{
+  "hide": true
+}
+```
+
+**Response:**
+```json
+{
+  "success": true
+}
+```
+
+**Notes:**
+- Hidden comments are still accessible via the API
+- Useful for moderation without permanent deletion
+- Users are not notified when their comment is hidden
+
+---
+
 ### User Operations
 
 #### Get User Profile
@@ -643,6 +904,6 @@ X-App-Usage: {"call_count":15,"total_cputime":25,"total_time":25}
 
 ---
 
-**Last Updated:** October 4, 2025  
+**Last Updated:** January 2025  
 **API Version:** Instagram Graph API v23.0  
-**Package Version:** 1.2.11
+**Package Version:** 1.6.0

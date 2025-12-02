@@ -52,6 +52,22 @@ This package provides comprehensive Instagram integration for n8n workflows, ena
 **User Management:**
 - 👤 **Get User Profile** - Retrieve user information (name, username, profile picture)
 
+### 💬 Comment Management (NEW in v1.6.0!)
+
+**Comment Moderation:**
+- 📜 **Get Comments** - Retrieve all comments on your media posts with pagination
+- 💬 **Get Replies** - Fetch replies to specific comments
+- ↩️ **Reply to Comment** - Post public replies to comments on your media
+- 🔒 **Send Private Reply** - Send a DM to users who commented (7-day window)
+- 🗑️ **Delete Comment** - Remove unwanted comments from your posts
+- 👁️ **Hide/Unhide Comment** - Toggle comment visibility without deletion
+
+**Perfect for:**
+- 🤝 Engaging with your audience through comment replies
+- 📧 Sending exclusive offers via private DM to commenters
+- 🛡️ Moderating spam and unwanted comments
+- 🔄 Automating comment response workflows (Manychat alternative!)
+
 ### � Instagram Content Publishing (NEW!)
 
 **Post Creation:**
@@ -257,6 +273,14 @@ services:
 **User Operations:**
 - `getUserProfile` - Fetch user information
 - `getMyProfile` - Get authenticated account info
+
+**Comment Operations (NEW in v1.6.0):**
+- `getComments` - Get all comments on media
+- `getReplies` - Get replies to a comment
+- `replyToComment` - Post public reply
+- `sendPrivateReply` - Send DM to commenter
+- `deleteComment` - Remove a comment
+- `toggleVisibility` - Hide/unhide comment
 
 **Webhook Events:**
 - `messages` - Incoming messages

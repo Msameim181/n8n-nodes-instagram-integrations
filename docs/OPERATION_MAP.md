@@ -19,7 +19,15 @@ Instagram Node
 │   ├── Send Quick Replies
 │   └── Upload Media
 │
-├── 📸 Post Resource (NEW)
+├── � Comment Resource (NEW v1.6.0)
+│   ├── Get Comments
+│   ├── Get Replies
+│   ├── Reply to Comment
+│   ├── Send Private Reply
+│   ├── Delete Comment
+│   └── Hide/Unhide Comment
+│
+├── �📸 Post Resource (NEW)
 │   ├── Create Single Post
 │   ├── Create Carousel Post
 │   ├── Create Reel
@@ -97,7 +105,70 @@ Output: mediaId, status
 
 ---
 
-### 📸 Post Resource (NEW)
+### � Comment Resource (NEW v1.6.0)
+
+#### Get Comments
+```
+Input:
+  - mediaId: ID of the media post
+  - returnAll: boolean
+  - limit: number (if not returnAll)
+  
+Output: Array of comment objects
+  - id, text, username, timestamp, like_count, replies_count
+```
+
+#### Get Replies
+```
+Input:
+  - commentId: ID of the parent comment
+  - returnAll: boolean
+  - limit: number (if not returnAll)
+  
+Output: Array of reply objects
+  - id, text, username, timestamp, like_count
+```
+
+#### Reply to Comment
+```
+Input:
+  - commentId: ID of comment to reply to
+  - replyText: Your reply message (max 8000 chars)
+  
+Output: { id: "new_reply_id" }
+```
+
+#### Send Private Reply
+```
+Input:
+  - commentId: ID of comment from user
+  - messageText: Private message to send
+  
+Output: { recipient_id, message_id }
+
+Note: 7-day window from comment timestamp
+```
+
+#### Delete Comment
+```
+Input:
+  - commentId: ID of comment to delete
+  
+Output: { success: true }
+```
+
+#### Hide/Unhide Comment
+```
+Input:
+  - commentId: ID of comment
+  - hide: boolean (true = hide, false = unhide)
+  
+Output: { success: true }
+```
+
+---
+
+### �📸 Post Resource (NEW)
 
 #### Create Single Post
 ```
@@ -323,6 +394,59 @@ Output: User profile data
 ┌─────────────┐
 │  Process    │
 └─────────────┘
+```
+
+### Pattern 5: Comment Moderation (NEW v1.6.0)
+```
+┌─────────────────────────┐
+│  Instagram Trigger      │
+│  (comments webhook)     │
+└──────────┬──────────────┘
+           │
+           v
+┌─────────────────────────┐
+│    Check Comment        │
+│    (spam detection)     │
+└──────────┬──────────────┘
+           │
+     ┌─────┴─────┐
+     │           │
+     v           v
+┌────────┐  ┌────────────┐
+│  Spam  │  │ Good       │
+└────┬───┘  └─────┬──────┘
+     │            │
+     v            v
+┌────────┐  ┌────────────┐
+│ Hide   │  │ Reply +    │
+│Comment │  │Private DM  │
+└────────┘  └────────────┘
+```
+
+### Pattern 6: Private Reply Workflow (NEW v1.6.0)
+```
+┌─────────────────────────┐
+│  Instagram Trigger      │
+│  (comments webhook)     │
+└──────────┬──────────────┘
+           │
+           v
+┌─────────────────────────┐
+│  Check keyword in       │
+│  comment (e.g., "INFO") │
+└──────────┬──────────────┘
+           │
+           v
+┌─────────────────────────┐
+│  Send Private Reply     │
+│  (DM with details)      │
+└──────────┬──────────────┘
+           │
+           v
+┌─────────────────────────┐
+│  Reply to Comment       │
+│  "Check your DMs! 📬"   │
+└─────────────────────────┘
 ```
 
 ---
@@ -556,6 +680,38 @@ limit: 50
 Resource: post
 Operation: publishPost
 creationId: "..."
+```
+
+### Get Comments (NEW v1.6.0)
+```javascript
+Resource: comment
+Operation: getComments
+mediaId: "17895695668004550"
+returnAll: true
+```
+
+### Reply to Comment (NEW v1.6.0)
+```javascript
+Resource: comment
+Operation: replyToComment
+commentId: "17858391726040854"
+replyText: "Thanks for your feedback!"
+```
+
+### Send Private Reply (NEW v1.6.0)
+```javascript
+Resource: comment
+Operation: sendPrivateReply
+commentId: "17858391726040854"
+messageText: "Here's your exclusive code: SAVE20"
+```
+
+### Hide Comment (NEW v1.6.0)
+```javascript
+Resource: comment
+Operation: toggleVisibility
+commentId: "17858391726040854"
+hide: true
 ```
 
 ---

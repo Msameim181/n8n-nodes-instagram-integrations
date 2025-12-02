@@ -38,6 +38,10 @@ export class Instagram implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
+						name: 'Comment',
+						value: 'comment',
+					},
+					{
 						name: 'Media',
 						value: 'media',
 					},
@@ -59,6 +63,58 @@ export class Instagram implements INodeType {
 					},
 				],
 				default: 'message',
+			},
+
+			// Comment Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+					},
+				},
+				options: [
+					{
+						name: 'Delete',
+						value: 'deleteComment',
+						description: 'Delete a comment on your media',
+						action: 'Delete a comment',
+					},
+					{
+						name: 'Get Comments',
+						value: 'getComments',
+						description: 'Get comments on a media post',
+						action: 'Get comments on a media post',
+					},
+					{
+						name: 'Get Replies',
+						value: 'getReplies',
+						description: 'Get replies to a comment',
+						action: 'Get replies to a comment',
+					},
+					{
+						name: 'Hide/Unhide',
+						value: 'toggleVisibility',
+						description: 'Hide or unhide a comment',
+						action: 'Hide or unhide a comment',
+					},
+					{
+						name: 'Reply',
+						value: 'replyToComment',
+						description: 'Reply to a comment publicly',
+						action: 'Reply to a comment',
+					},
+					{
+						name: 'Send Private Reply',
+						value: 'sendPrivateReply',
+						description: 'Send a private DM to a commenter',
+						action: 'Send a private reply to a commenter',
+					},
+				],
+				default: 'getComments',
 			},			// Message Operations
 			{
 				displayName: 'Operation',
@@ -245,6 +301,195 @@ export class Instagram implements INodeType {
 					},
 				],
 				default: 'getMyProfile',
+			},
+
+			// ==================== Comment Operations Parameters ====================
+			// Get Comments
+			{
+				displayName: 'Media ID',
+				name: 'commentMediaId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['getComments'],
+					},
+				},
+				default: '',
+				placeholder: '17895695668004550',
+				description: 'ID of the media post to get comments from',
+			},
+			{
+				displayName: 'Return All',
+				name: 'returnAll',
+				type: 'boolean',
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['getComments'],
+					},
+				},
+				default: false,
+				description: 'Whether to return all comments or only up to a given limit',
+			},
+			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['getComments'],
+						returnAll: [false],
+					},
+				},
+				typeOptions: {
+					minValue: 1,
+				},
+				default: 50,
+				description: 'Max number of comments to return',
+			},
+
+			// Get Replies
+			{
+				displayName: 'Comment ID',
+				name: 'commentId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['getReplies'],
+					},
+				},
+				default: '',
+				placeholder: '17870913679156914',
+				description: 'ID of the comment to get replies from',
+			},
+
+			// Reply to Comment
+			{
+				displayName: 'Comment ID',
+				name: 'commentId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['replyToComment'],
+					},
+				},
+				default: '',
+				placeholder: '17870913679156914',
+				description: 'ID of the comment to reply to',
+			},
+			{
+				displayName: 'Reply Message',
+				name: 'replyMessage',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['replyToComment'],
+					},
+				},
+				default: '',
+				placeholder: 'Thanks for your comment!',
+				description: 'The message to post as a reply to the comment',
+			},
+
+			// Send Private Reply
+			{
+				displayName: 'Comment ID',
+				name: 'commentId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['sendPrivateReply'],
+					},
+				},
+				default: '',
+				placeholder: '17870913679156914',
+				description: 'ID of the comment to reply to privately. The commenter will receive a DM.',
+			},
+			{
+				displayName: 'Private Message',
+				name: 'privateMessage',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['sendPrivateReply'],
+					},
+				},
+				default: '',
+				placeholder: 'Thanks for commenting! Here is more info...',
+				description: 'The private message to send to the commenter via DM. Must be sent within 7 days of the comment.',
+			},
+
+			// Delete Comment
+			{
+				displayName: 'Comment ID',
+				name: 'commentId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['deleteComment'],
+					},
+				},
+				default: '',
+				placeholder: '17870913679156914',
+				description: 'ID of the comment to delete',
+			},
+
+			// Hide/Unhide Comment
+			{
+				displayName: 'Comment ID',
+				name: 'commentId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['toggleVisibility'],
+					},
+				},
+				default: '',
+				placeholder: '17870913679156914',
+				description: 'ID of the comment to hide or unhide',
+			},
+			{
+				displayName: 'Action',
+				name: 'hideAction',
+				type: 'options',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
+						operation: ['toggleVisibility'],
+					},
+				},
+				options: [
+					{
+						name: 'Hide',
+						value: 'hide',
+						description: 'Hide the comment from public view',
+					},
+					{
+						name: 'Unhide',
+						value: 'unhide',
+						description: 'Make the comment visible again',
+					},
+				],
+				default: 'hide',
+				description: 'Whether to hide or unhide the comment',
 			},
 
 			// ==================== Send Text Message ====================
@@ -1064,7 +1309,7 @@ export class Instagram implements INodeType {
 						default: true,
 						description: 'Whether to share this post to feed (for reels)',
 					},
-				
+
 					{
 						displayName: 'Thumb Offset',
 						name: 'thumb_offset',
@@ -2112,16 +2357,16 @@ export class Instagram implements INodeType {
 						// Wait for container to be ready and auto-publish story
 						if (createResponse.id) {
 							const containerId = createResponse.id;
-							
+
 							// Poll status until media is ready (max 60 seconds)
 							let status = 'IN_PROGRESS';
 							let attempts = 0;
 							const maxAttempts = 30; // 30 attempts with 2 second intervals = 60 seconds max
-							
+
 							while (status === 'IN_PROGRESS' && attempts < maxAttempts) {
 								// Wait 2 seconds before checking status
 								await new Promise(resolve => setTimeout(resolve, 2000));
-								
+
 								// Check container status
 								const statusResponse = await instagramApiRequest.call(
 									this,
@@ -2130,26 +2375,26 @@ export class Instagram implements INodeType {
 									{},
 									{ fields: 'status_code' },
 								);
-								
+
 								status = statusResponse.status_code || 'IN_PROGRESS';
 								attempts++;
-								
+
 								// If status is FINISHED, ready to publish
 								if (status === 'FINISHED') {
 									break;
 								}
-								
+
 								// If status is ERROR or EXPIRED, throw error
 								if (status === 'ERROR' || status === 'EXPIRED') {
 									throw new NodeOperationError(this.getNode(), `Story creation failed with status: ${status}. Please check your media file and try again.`);
 								}
 							}
-							
+
 							// If still IN_PROGRESS after max attempts, throw error
 							if (status === 'IN_PROGRESS') {
 								throw new NodeOperationError(this.getNode(), 'Story creation timed out. The media is taking too long to process. Please try with a smaller file or try again later.');
 							}
-							
+
 							// Publish the story
 							const publishResponse = await instagramApiRequest.call(
 								this,
@@ -2157,19 +2402,170 @@ export class Instagram implements INodeType {
 								`/${igUserId}/media_publish`,
 								{ creation_id: containerId },
 							);
-							
-							returnData.push({ 
+
+							returnData.push({
 								json: {
 									...publishResponse,
 									status: 'published',
 									container_id: containerId,
 									attempts_taken: attempts,
-								}, 
-								pairedItem: { item: i } 
+								},
+								pairedItem: { item: i }
 							});
 						} else {
 							returnData.push({ json: createResponse, pairedItem: { item: i } });
 						}
+					}
+				}
+
+				// ==================== Comment Operations ====================
+				else if (resource === 'comment') {
+					// ==================== Get Comments ====================
+					if (operation === 'getComments') {
+						const mediaId = this.getNodeParameter('commentMediaId', i) as string;
+						const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+
+						const qs: any = {
+							fields: 'id,text,timestamp,username,like_count,replies{id,text,timestamp,username}',
+						};
+
+						if (returnAll) {
+							const { instagramApiRequestAllItems } = await import('./GenericFunctions');
+							const responseData = await instagramApiRequestAllItems.call(
+								this,
+								'GET',
+								`/${mediaId}/comments`,
+								{},
+								qs,
+							);
+							responseData.forEach((item: any) => {
+								returnData.push({ json: item, pairedItem: { item: i } });
+							});
+						} else {
+							const limit = this.getNodeParameter('limit', i) as number;
+							qs.limit = limit;
+
+							const responseData = await instagramApiRequest.call(
+								this,
+								'GET',
+								`/${mediaId}/comments`,
+								{},
+								qs,
+							);
+
+							if (responseData.data) {
+								responseData.data.forEach((item: any) => {
+									returnData.push({ json: item, pairedItem: { item: i } });
+								});
+							} else {
+								returnData.push({ json: responseData, pairedItem: { item: i } });
+							}
+						}
+					}
+
+					// ==================== Get Replies ====================
+					else if (operation === 'getReplies') {
+						const commentId = this.getNodeParameter('commentId', i) as string;
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'GET',
+							`/${commentId}/replies`,
+							{},
+							{ fields: 'id,text,timestamp,username,like_count' },
+						);
+
+						if (responseData.data) {
+							responseData.data.forEach((item: any) => {
+								returnData.push({ json: item, pairedItem: { item: i } });
+							});
+						} else {
+							returnData.push({ json: responseData, pairedItem: { item: i } });
+						}
+					}
+
+					// ==================== Reply to Comment ====================
+					else if (operation === 'replyToComment') {
+						const commentId = this.getNodeParameter('commentId', i) as string;
+						const replyMessage = this.getNodeParameter('replyMessage', i) as string;
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'POST',
+							`/${commentId}/replies`,
+							{ message: replyMessage },
+						);
+						returnData.push({ json: responseData, pairedItem: { item: i } });
+					}
+
+					// ==================== Send Private Reply ====================
+					else if (operation === 'sendPrivateReply') {
+						const commentId = this.getNodeParameter('commentId', i) as string;
+						const privateMessage = this.getNodeParameter('privateMessage', i) as string;
+
+						// Use the /me/messages endpoint with comment_id in recipient
+						const body = {
+							recipient: {
+								comment_id: commentId,
+							},
+							message: {
+								text: privateMessage,
+							},
+						};
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'POST',
+							'/me/messages',
+							body,
+						);
+						returnData.push({ json: responseData, pairedItem: { item: i } });
+					}
+
+					// ==================== Delete Comment ====================
+					else if (operation === 'deleteComment') {
+						const commentId = this.getNodeParameter('commentId', i) as string;
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'DELETE',
+							`/${commentId}`,
+						);
+						returnData.push({
+							json: {
+								success: true,
+								deleted_comment_id: commentId,
+								...responseData,
+							},
+							pairedItem: { item: i }
+						});
+					}
+
+					// ==================== Hide/Unhide Comment ====================
+					else if (operation === 'toggleVisibility') {
+						const commentId = this.getNodeParameter('commentId', i) as string;
+						const hideAction = this.getNodeParameter('hideAction', i) as string;
+
+						const body = {
+							hide: hideAction === 'hide',
+						};
+
+						const responseData = await instagramApiRequest.call(
+							this,
+							'POST',
+							`/${commentId}`,
+							body,
+						);
+						returnData.push({
+							json: {
+								success: true,
+								comment_id: commentId,
+								action: hideAction,
+								hidden: hideAction === 'hide',
+								...responseData,
+							},
+							pairedItem: { item: i }
+						});
 					}
 				}
 
