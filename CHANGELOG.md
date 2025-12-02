@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.7] - 2025-12-02
+
+### Fixed
+- **Critical: Token persistence across n8n restarts** - Long-lived tokens are now properly persisted to the database
+  - Previously, long-lived tokens were only stored in memory cache and lost on n8n restart
+  - After restart, the node would try to exchange an expired OAuth token, causing "Session has expired" (error code 190)
+  - Now using n8n's `preAuthentication` system which automatically persists tokens to the database
+
+### Changed
+- **Token Management Architecture Refactored (Again):**
+  - Moved token exchange/refresh logic back to credential type using n8n's `preAuthentication` hook
+  - Added `expirable: true` typeOption to `longLivedToken` field to enable automatic credential persistence
+  - `preAuthentication` now handles:
+    - Exchanging short-lived OAuth tokens for 60-day long-lived tokens
+    - Refreshing long-lived tokens when they have less than 7 days remaining
+    - Returning updated credentials for n8n to persist automatically
+  - Simplified `getAccessToken()` in GenericFunctions.ts to just retrieve the persisted token
+  - Removed in-memory token cache (no longer needed with database persistence)
+  - Removed standalone `exchangeForLongLivedToken()` and `refreshLongLivedToken()` functions
+
+### Technical Details
+- The `preAuthentication` method is called by n8n before each API request when credentials have an `expirable` field
+- When `preAuthentication` returns credential data, n8n automatically persists it to the database
+- Token lifecycle: OAuth → Exchange (60 days) → Auto-refresh (when < 7 days remaining)
+- Token refresh only attempted when token is at least 24 hours old (Instagram API requirement)
+
+### Migration Notes
+- No action required for existing users
+- On first API call after upgrade, the token will be automatically migrated to the new persistence system
+- If you experience any issues, simply reconnect your Instagram account in the credential settings
+
+---
+
 ## [1.5.5] - 2025-10-16
 
 ### Changed

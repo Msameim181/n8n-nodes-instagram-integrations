@@ -1,6 +1,9 @@
 import type {
+	ICredentialDataDecryptedObject,
 	ICredentialTestRequest,
 	ICredentialType,
+	IDataObject,
+	IHttpRequestHelper,
 	INodeProperties,
 } from 'n8n-workflow';
 
@@ -51,7 +54,7 @@ export class InstagramOAuth2Api implements ICredentialType {
 			name: 'accountInfoNotice',
 			type: 'notice',
 			default: '',
-			description: 'After connecting your account, your Instagram Business Account details (username, ID, profile) will be automatically available. You can access this information in your workflow nodes. The system will automatically exchange your OAuth token for a long-lived token (60 days) and refresh it when needed.',
+			description: 'After connecting your account, your Instagram Business Account details (username, ID, profile) will be automatically available. You can access this information in your workflow nodes. The system will automatically exchange your OAuth token for a long-lived token (60 days) and persist it, ensuring it survives n8n restarts.',
 		},
 		{
 			displayName: 'Client ID',
@@ -84,30 +87,106 @@ export class InstagramOAuth2Api implements ICredentialType {
 			description: 'Optional: Custom verification token for webhook setup (minimum 20 characters). Only needed if using Instagram Trigger node.',
 			placeholder: 'my_custom_verify_token_2024',
 		},
-		// Hidden fields for token management
+		// Hidden field for long-lived token with expirable typeOption
+		// This enables n8n's preAuthentication system to persist the token
 		{
-			displayName: 'Token Type',
-			name: 'tokenType',
+			displayName: 'Long-Lived Token',
+			name: 'longLivedToken',
 			type: 'hidden',
-			default: 'short-lived',
-			description: 'Type of access token (short-lived or long-lived)',
+			typeOptions: {
+				expirable: true,
+			},
+			default: '',
 		},
 		{
 			displayName: 'Token Expires At',
 			name: 'tokenExpiresAt',
 			type: 'hidden',
 			default: 0,
-			description: 'Unix timestamp when the token expires',
-		},
-		{
-			displayName: 'Long-Lived Token',
-			name: 'longLivedToken',
-			type: 'hidden',
-			typeOptions: { password: true },
-			default: '',
-			description: 'The long-lived access token (60 days validity)',
 		},
 	];
+
+	/**
+	 * Pre-authentication hook that exchanges short-lived OAuth token for a long-lived token
+	 * and refreshes it when near expiration. n8n automatically persists the returned values.
+	 *
+	 * This is called by n8n before each API request when the credential has an expirable field.
+	 * If this function returns new credential data, n8n will persist it to the database.
+	 */
+	async preAuthentication(
+		this: IHttpRequestHelper,
+		credentials: ICredentialDataDecryptedObject,
+	): Promise<IDataObject> {
+		const now = Math.floor(Date.now() / 1000);
+		const longLivedToken = credentials.longLivedToken as string;
+		const tokenExpiresAt = (credentials.tokenExpiresAt as number) || 0;
+		const clientSecret = credentials.clientSecret as string;
+		const oauthTokenData = credentials.oauthTokenData as { access_token?: string } | undefined;
+		const shortLivedToken = oauthTokenData?.access_token;
+
+		// If we have a valid long-lived token that's not near expiration, no action needed
+		if (longLivedToken && tokenExpiresAt > 0) {
+			// Token is still valid with more than 7 days remaining
+			const sevenDaysInSeconds = 7 * 24 * 60 * 60;
+			if (tokenExpiresAt > now + sevenDaysInSeconds) {
+				return {}; // No update needed
+			}
+
+			// Token is valid but near expiration (< 7 days), try to refresh it
+			// Instagram allows refresh only if token is at least 24 hours old
+			const totalLifetime = 60 * 24 * 60 * 60; // 60 days
+			const tokenAge = now - (tokenExpiresAt - totalLifetime);
+			if (tokenAge >= 24 * 60 * 60) {
+				try {
+					const refreshed = await this.helpers.httpRequest({
+						method: 'GET',
+						url: 'https://graph.instagram.com/refresh_access_token',
+						qs: {
+							grant_type: 'ig_refresh_token',
+							access_token: longLivedToken,
+						},
+					}) as { access_token: string; token_type: string; expires_in: number };
+
+					return {
+						longLivedToken: refreshed.access_token,
+						tokenExpiresAt: now + refreshed.expires_in,
+					};
+				} catch (error) {
+					// Refresh failed, but token is still valid - continue using it
+					console.warn('Instagram: Failed to refresh long-lived token, continuing with current token', error);
+					return {};
+				}
+			}
+			return {}; // Token too new to refresh
+		}
+
+		// No long-lived token yet - exchange short-lived OAuth token for long-lived
+		if (!shortLivedToken) {
+			// No token available at all
+			return {};
+		}
+
+		try {
+			const exchanged = await this.helpers.httpRequest({
+				method: 'GET',
+				url: 'https://graph.instagram.com/access_token',
+				qs: {
+					grant_type: 'ig_exchange_token',
+					client_secret: clientSecret,
+					access_token: shortLivedToken,
+				},
+			}) as { access_token: string; token_type: string; expires_in: number };
+
+			return {
+				longLivedToken: exchanged.access_token,
+				tokenExpiresAt: now + exchanged.expires_in,
+			};
+		} catch (error) {
+			// Exchange failed - the short-lived token may be expired
+			console.error('Instagram: Failed to exchange OAuth token for long-lived token', error);
+			return {};
+		}
+	}
 
 	/**
 	 * Test the credentials to ensure they work

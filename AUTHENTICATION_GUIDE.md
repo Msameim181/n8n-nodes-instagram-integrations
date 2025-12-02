@@ -20,12 +20,18 @@ Complete guide for setting up Instagram API authentication with n8n-nodes-instag
 
 This package supports **OAuth2 authentication** for seamless integration with Instagram's Messaging API. The authentication process connects your n8n workflows to Instagram Business Accounts through the Meta Graph API.
 
+### Key Features (v1.5.7+)
+
+- ✅ **Automatic Token Persistence** - Long-lived tokens are stored in n8n's database and survive restarts
+- ✅ **Automatic Token Exchange** - Short-lived OAuth tokens are automatically exchanged for 60-day tokens
+- ✅ **Automatic Token Refresh** - Tokens are refreshed when near expiration (< 7 days remaining)
+- ✅ **No Manual Intervention** - Everything is handled transparently by n8n's credential system
+
 ### Supported Credential Types
 
-| Type | Recommended | Use Case | Auto-Refresh |
-|------|-------------|----------|--------------|
-| **Instagram OAuth2 API** | ✅ Yes | Production, long-term | Yes |
-| **Instagram Access Token API** | ⚠️ Alternative | Testing, manual control | No |
+| Type | Recommended | Use Case | Auto-Refresh | Survives Restart |
+|------|-------------|----------|--------------|------------------|
+| **Instagram OAuth2 API** | ✅ Yes | Production, long-term | Yes | ✅ Yes |
 
 ---
 
@@ -60,19 +66,24 @@ Your Meta app needs these permissions:
 ### Method 1: OAuth2 (Recommended) ⭐
 
 **Advantages:**
-- ✅ Automatic token refresh
+- ✅ Automatic token exchange (short-lived → 60-day long-lived)
+- ✅ Automatic token refresh when near expiration
+- ✅ **Token persists through n8n/Docker restarts** (v1.5.7+)
 - ✅ Secure authorization flow
 - ✅ No manual token management
 - ✅ Best for production
 
-**Process:**
+**How It Works (v1.5.7+):**
 1. User clicks "Connect my account"
 2. Popup opens Meta login
 3. User authorizes permissions
-4. n8n receives access token
-5. Token auto-refreshes before expiry
+4. n8n receives short-lived access token (1 hour)
+5. **First API call**: Token is automatically exchanged for 60-day long-lived token
+6. **Token is persisted** to n8n's database (survives restarts)
+7. **When token nears expiration** (< 7 days): Automatically refreshed
+8. Workflow continues working indefinitely without manual intervention
 
-### Method 2: Manual Access Token
+### ~~Method 2: Manual Access Token~~ (Deprecated)
 
 **Advantages:**
 - ⚡ Quick setup for testing
@@ -335,7 +346,7 @@ The package automatically discovers your Instagram Business Account ID when you 
 
 ## OAuth2 Flow
 
-### How It Works
+### How It Works (v1.5.7+)
 
 ```
 User clicks "Connect"
@@ -346,19 +357,40 @@ User authorizes permissions
        ↓
 Meta redirects back to n8n
        ↓
-n8n exchanges code for token
+n8n receives short-lived token (1 hour)
        ↓
-Token stored securely
+First API request triggers preAuthentication:
        ↓
-n8n auto-refreshes token
+┌─────────────────────────────────────────────┐
+│  Token Exchange (automatic)                 │
+│  Short-lived token → 60-day long-lived     │
+│  Token persisted to n8n database           │
+└─────────────────────────────────────────────┘
+       ↓
+Workflow runs normally
+       ↓
+┌─────────────────────────────────────────────┐
+│  Token Refresh (automatic, when < 7 days)   │
+│  Old token → New 60-day token              │
+│  Updated token persisted to database       │
+└─────────────────────────────────────────────┘
 ```
 
-### Token Lifecycle
+### Token Lifecycle (v1.5.7+)
 
-- **Access Token**: Valid for 60 days
-- **Refresh Token**: Used to get new access token
-- **Auto-Refresh**: n8n handles automatically
-- **Manual Refresh**: Re-authorize if needed
+| Stage | Token Type | Validity | Action |
+|-------|------------|----------|--------|
+| OAuth | Short-lived | 1 hour | Received from Meta |
+| Exchange | Long-lived | 60 days | Automatic on first API call |
+| Active | Long-lived | 60 days | Persisted in n8n database |
+| Near Expiry | Long-lived | < 7 days | Auto-refreshed |
+| Refreshed | Long-lived | 60 days | New token persisted |
+
+**Important Notes:**
+- ✅ Tokens survive n8n restarts, Docker container restarts, and server reboots
+- ✅ Refresh only happens if token is at least 24 hours old (Instagram API requirement)
+- ✅ If refresh fails but token is still valid, the existing token continues to work
+- ⚠️ If token fully expires (workflow not run for 60+ days), user must reconnect
 
 ### Scopes Requested
 
@@ -370,40 +402,46 @@ n8n auto-refreshes token
 
 ---
 
-## Access Token Method
+## Access Token Method (Reference Only)
 
-### Generating Long-Lived Tokens
+> **Note:** As of v1.5.7, you don't need to manually manage tokens. The OAuth2 credential type handles all token exchange and refresh automatically. This section is kept for reference only.
 
-Short-lived tokens (1 hour) can be exchanged for long-lived tokens (60 days):
+### How the Package Handles Tokens Automatically
 
-```bash
-curl -X GET "https://graph.instagram.com/v23.0/oauth/access_token" \
-  -d "grant_type=fb_exchange_token" \
-  -d "client_id=YOUR_APP_ID" \
-  -d "client_secret=YOUR_APP_SECRET" \
-  -d "fb_exchange_token=SHORT_LIVED_TOKEN"
+**Token Exchange** (short-lived → long-lived):
+```
+GET https://graph.instagram.com/access_token
+  ?grant_type=ig_exchange_token
+  &client_secret=YOUR_APP_SECRET
+  &access_token=SHORT_LIVED_TOKEN
 ```
 
 Response:
 ```json
 {
-  "access_token": "EAA...",
+  "access_token": "IGQ...",
   "token_type": "bearer",
   "expires_in": 5183944
 }
 ```
 
-### Extending Token Expiration
-
-Refresh long-lived tokens before expiry:
-
-```bash
-curl -X GET "https://graph.instagram.com/v23.0/oauth/access_token" \
-  -d "grant_type=fb_exchange_token" \
-  -d "client_id=YOUR_APP_ID" \
-  -d "client_secret=YOUR_APP_SECRET" \
-  -d "fb_exchange_token=LONG_LIVED_TOKEN"
+**Token Refresh** (when < 7 days remaining):
 ```
+GET https://graph.instagram.com/refresh_access_token
+  ?grant_type=ig_refresh_token
+  &access_token=LONG_LIVED_TOKEN
+```
+
+Response:
+```json
+{
+  "access_token": "IGQ...",
+  "token_type": "bearer",
+  "expires_in": 5183944
+}
+```
+
+> **All of this is handled automatically** by the `preAuthentication` hook in the credential type. The refreshed token is persisted to n8n's database, ensuring it survives restarts.
 
 ---
 
@@ -414,15 +452,21 @@ curl -X GET "https://graph.instagram.com/v23.0/oauth/access_token" \
 #### "Invalid OAuth Access Token" (Error 190)
 
 **Causes:**
-- Token expired
-- Token revoked by user
+- Token expired (workflow not run for 60+ days)
+- Token revoked by user in Instagram/Facebook settings
 - Missing required permissions
+- App removed from user's authorized apps
 
 **Solutions:**
-1. Re-authorize credential in n8n
+1. **Re-authorize credential in n8n:**
+   - Go to Credentials → Instagram OAuth2 API
+   - Click "Connect my account" to re-authenticate
+   - The system will automatically get a new long-lived token
 2. Check token expiry in [Access Token Debugger](https://developers.facebook.com/tools/debug/accesstoken/)
-3. Verify all permissions granted
-4. Generate new token
+3. Verify all permissions are still granted
+4. Check if the Instagram account is still connected to the Facebook Page
+
+**Note (v1.5.7+):** If you see this error after an n8n restart, it may indicate the token wasn't properly persisted. Try re-authenticating once to ensure the long-lived token is stored correctly.
 
 #### "Permission Denied" (Error 200)
 
@@ -500,9 +544,24 @@ n8n stores credentials encrypted:
 ### Q: How long do tokens last?
 
 **A:** 
-- Short-lived: 1 hour
-- Long-lived: 60 days
-- OAuth2: Auto-refreshed by n8n
+- Short-lived (from OAuth): 1 hour
+- Long-lived (after exchange): 60 days
+- **With OAuth2 credential (v1.5.7+)**: Indefinitely, as long as workflow runs at least once every 60 days
+
+### Q: Do tokens survive n8n restarts?
+
+**A:** Yes! As of v1.5.7, long-lived tokens are automatically persisted to n8n's database. They survive:
+- n8n service restarts
+- Docker container restarts
+- Server reboots
+- n8n updates
+
+### Q: When does automatic token refresh happen?
+
+**A:** The token is automatically refreshed when:
+- Token has less than 7 days remaining before expiration
+- Token is at least 24 hours old (Instagram API requirement)
+- An API request is made (triggers the refresh check)
 
 ### Q: Can I use a personal Instagram account?
 
